@@ -8,7 +8,9 @@ SplashScreen.preventAutoHideAsync();
 export default function HomePage({ navigation }) {
     let [fontsLoaded] = useFonts({
         "OpenSans-Regular": require("../assets/fonts/OpenSans-Regular.ttf"),
-        "Lato-Regular": require("../assets/fonts/Lato-Regular.ttf")
+        "Lato-Regular": require("../assets/fonts/Lato-Regular.ttf"),
+        "Roboto-Bold": require("../assets/fonts/Roboto-Bold.ttf"),
+        "Lobster-Regular": require("../assets/fonts/Lobster-Regular.ttf")
     })
     const onLayoutRootView = useCallback(async () => {
         if(fontsLoaded) {
