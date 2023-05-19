@@ -4,6 +4,8 @@ import {useCallback} from "react";
 import * as SplashScreen from 'expo-splash-screen';
 import CustomBlueButton from "../components/CustomBlueButton";
 import CustomGreenButton from "../components/CustomGreenButton";
+import {onAuthStateChanged} from 'firebase/auth'
+import {auth} from "../utils/firebaseConfig";
 SplashScreen.preventAutoHideAsync();
 export default function HomePage({ navigation }) {
     let [fontsLoaded] = useFonts({
@@ -20,6 +22,13 @@ export default function HomePage({ navigation }) {
     if (!fontsLoaded) {
         return null;
     }
+
+    onAuthStateChanged(auth, (user) => {
+        if(!user){
+            navigation.navigate("Main")
+        }
+
+    })
     return(
         <View style={styles.container} onLayout={onLayoutRootView}>
             <Image source={require("../assets/images/logo-app.png")} />

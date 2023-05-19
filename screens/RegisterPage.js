@@ -1,19 +1,53 @@
 import {Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import CustomBlueButton from "../components/CustomBlueButton";
+import {useState} from "react";
+import Toast from "react-native-root-toast";
+import {auth} from "../utils/firebaseConfig";
+import {createUserWithEmailAndPassword} from 'firebase/auth'
 
 export default function RegisterPage({navigation}) {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [repeatPassword, setRepeatPassword] = useState('')
+
+    const handleRegister = async () => {
+        if (password !== repeatPassword) {
+            Toast.show('Las contraseñas no coinciden', {
+                duration: Toast.durations.LONG
+            })
+        } else {
+            try {
+                await createUserWithEmailAndPassword(auth, email, password)
+                Toast.show('Se ha registrado correctamente', {
+                    duration: Toast.durations.SHORT
+                })
+                navigation.navigate("Home")
+
+            } catch (error) {
+                Toast.show('Ha habido algún error: ' + error.toString(), {
+                    duration: Toast.durations.LONG
+                })
+            }
+        }
+
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.titlesView}>
                 <Text style={styles.title1}>¡Bienvenido a Tony Gallardo!</Text>
                 <Text style={styles.title2}>Regístrate y comienza la aventura</Text>
             </View>
-            <TextInput style={styles.textInput} placeholder={"correo electrónico"}/>
-            <TextInput style={styles.textInput} placeholder={"contraseña"}/>
-            <TextInput style={styles.textInput} placeholder={"repite contraseña"}/>
-            <CustomBlueButton title={"Registrarse"} onPress={() => {
-                navigation.navigate("Home")
-            }}/>
+            <TextInput value={email} autoCapitalize={"none"} onChangeText={setEmail} style={styles.textInput}
+                       textContentType={"emailAddress"}
+                       placeholder={"correo electrónico"}/>
+            <TextInput value={password} onChangeText={setPassword} autoCapitalize={"none"} secureTextEntry={true}
+                       textContentType={"password"} style={styles.textInput}
+                       placeholder={"contraseña"}/>
+            <TextInput value={repeatPassword} onChangeText={setRepeatPassword} autoCapitalize={"none"}
+                       secureTextEntry={true} textContentType={"password"}
+                       style={styles.textInput} placeholder={"repite contraseña"}/>
+            <CustomBlueButton title={"Registrarse"} onPress={handleRegister}/>
             <Text style={styles.normalText}>¿Ya tiene cuenta?</Text>
             <Pressable onPress={() => {
                 navigation.navigate("Login")
@@ -71,6 +105,7 @@ const styles = StyleSheet.create({
         width: 354,
         height: 67,
         paddingLeft: 22,
+        paddingRight: 22,
         fontStyle: "normal",
         fontFamily: "OpenSans-Regular",
         fontSize: 20,

@@ -1,7 +1,29 @@
 import {Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import CustomGreenButton from "../components/CustomGreenButton";
+import {useState} from "react";
+import {auth} from "../utils/firebaseConfig";
+import Toast from "react-native-root-toast";
+import {signInWithEmailAndPassword} from 'firebase/auth'
 
 export default function LoginPage({navigation}) {
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const handleLogin = async () => {
+        try {
+            await signInWithEmailAndPassword(auth, email, password)
+            Toast.show('Ha iniciado sesión correctamente', {
+                duration: Toast.durations.SHORT
+            })
+            navigation.navigate("Home")
+        } catch (error) {
+            Toast.show('Ha habido algún error: ' + error.toString(), {
+                duration: Toast.durations.LONG
+            })
+        }
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.titlesView}>
@@ -9,11 +31,11 @@ export default function LoginPage({navigation}) {
                 <Text style={styles.title2}>¡Vamos a seguir explorando juntos!</Text>
 
             </View>
-            <TextInput style={styles.textInput} placeholder={"correo electrónico"}/>
-            <TextInput style={styles.textInput} placeholder={"contraseña"}/>
-            <CustomGreenButton title={"Iniciar sesión"} onPress={() => {
-                navigation.navigate("Home")
-            }}/>
+            <TextInput autoCapitalize={"none"} value={email} onChangeText={setEmail} textContentType={"emailAddress"}
+                       style={styles.textInput} placeholder={"correo electrónico"}/>
+            <TextInput autoCapitalize={"none"} value={password} onChangeText={setPassword} secureTextEntry={true}
+                       textContentType={"password"} style={styles.textInput} placeholder={"contraseña"}/>
+            <CustomGreenButton title={"Iniciar sesión"} onPress={handleLogin}/>
             <Text style={styles.normalText}>¿No tiene cuenta?</Text>
             <Pressable onPress={() => {
                 navigation.navigate("Register")
@@ -70,6 +92,7 @@ const styles = StyleSheet.create({
         width: 354,
         height: 67,
         paddingLeft: 22,
+        paddingRight: 22,
         fontStyle: "normal",
         fontFamily: "OpenSans-Regular",
         fontSize: 20,
