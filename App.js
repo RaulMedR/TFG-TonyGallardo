@@ -4,14 +4,14 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import LoginPage from "./screens/LoginPage";
 import RegisterPage from "./screens/RegisterPage";
 import {RootSiblingParent} from 'react-native-root-siblings'
-import MainPage from "./screens/MainPage";
-
+import BottomTabNavigator from "./components/BottomTabNavigator";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
 
     return (
         <RootSiblingParent>
+
             <NavigationContainer>
                 <Stack.Navigator initialRouteName={"Home"} screenOptions={{headerShown: false}}>
                     <Stack.Screen
@@ -27,9 +27,7 @@ export default function App() {
                         component={RegisterPage}
                     />
                     <Stack.Screen
-                        name={"Main"}
-                        component={MainPage}
-                    />
+                        name={"Main"} component={BottomTabNavigator}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </RootSiblingParent>

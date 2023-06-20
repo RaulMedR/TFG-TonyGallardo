@@ -4,6 +4,7 @@ import {useState} from "react";
 import Toast from "react-native-root-toast";
 import {auth} from "../utils/firebaseConfig";
 import {createUserWithEmailAndPassword} from 'firebase/auth'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 export default function RegisterPage({navigation}) {
     const [email, setEmail] = useState('')
@@ -21,7 +22,7 @@ export default function RegisterPage({navigation}) {
                 Toast.show('Se ha registrado correctamente', {
                     duration: Toast.durations.SHORT
                 })
-                navigation.navigate("Home")
+                navigation.navigate("Main")
 
             } catch (error) {
                 Toast.show('Ha habido algún error: ' + error.toString(), {
@@ -69,18 +70,19 @@ const styles = StyleSheet.create({
     titlesView: {
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 80
+        maxWidth: wp(95),
+        marginBottom: hp(5)
     },
     title1: {
         fontFamily: "Lobster-Regular",
         color: "#52E23E",
-        fontSize: 33,
+        fontSize: 40,
         marginBottom: 28,
         textAlign: "center"
     },
     title2: {
         fontFamily: "Roboto-Bold",
-        fontSize: 35,
+        fontSize: 25,
         textAlign: "center",
         color: "#A8A8A8"
 
@@ -88,13 +90,13 @@ const styles = StyleSheet.create({
     normalText: {
         fontFamily: "OpenSans-Regular",
         fontStyle: "normal",
-        fontSize: 24.4,
+        fontSize: 20,
 
     },
     buttonText: {
         fontFamily: "OpenSans-Regular",
         fontStyle: "normal",
-        fontSize: 24.4,
+        fontSize: 20,
         color: "#52E23E"
     },
     textInput: {
@@ -102,13 +104,13 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: "#00DAE8",
         backgroundColor: "#F8F8F8",
-        width: 354,
-        height: 67,
+        width: wp(85),
+        height: wp(85) * 0.2,
         paddingLeft: 22,
         paddingRight: 22,
         fontStyle: "normal",
         fontFamily: "OpenSans-Regular",
         fontSize: 20,
-        marginBottom: 38,
+        marginBottom: hp(3),
     }
 });

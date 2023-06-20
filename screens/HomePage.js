@@ -1,13 +1,15 @@
 import {Image, StyleSheet, Text, View} from "react-native";
-import { useFonts } from "expo-font";
+import {useFonts} from "expo-font";
 import {useCallback} from "react";
 import * as SplashScreen from 'expo-splash-screen';
 import CustomBlueButton from "../components/CustomBlueButton";
 import CustomGreenButton from "../components/CustomGreenButton";
 import {onAuthStateChanged} from 'firebase/auth'
 import {auth} from "../utils/firebaseConfig";
+import {heightPercentageToDP as hp} from "react-native-responsive-screen";
+
 SplashScreen.preventAutoHideAsync();
-export default function HomePage({ navigation }) {
+export default function HomePage({navigation}) {
     let [fontsLoaded] = useFonts({
         "OpenSans-Regular": require("../assets/fonts/OpenSans-Regular.ttf"),
         "Lato-Regular": require("../assets/fonts/Lato-Regular.ttf"),
@@ -15,7 +17,7 @@ export default function HomePage({ navigation }) {
         "Lobster-Regular": require("../assets/fonts/Lobster-Regular.ttf")
     })
     const onLayoutRootView = useCallback(async () => {
-        if(fontsLoaded) {
+        if (fontsLoaded) {
             await SplashScreen.hideAsync()
         }
     }, [fontsLoaded])
@@ -24,21 +26,21 @@ export default function HomePage({ navigation }) {
     }
 
     onAuthStateChanged(auth, (user) => {
-        if(!user){
+        if (user) {
             navigation.navigate("Main")
         }
 
     })
-    return(
+    return (
         <View style={styles.container} onLayout={onLayoutRootView}>
-            <Image source={require("../assets/images/logo-app.png")} />
+            <Image style={styles.logoImage} source={require("../assets/images/logo-app.png")} resizeMode={"contain"}/>
             <Text style={styles.normalText}>¿Nuevo en el parque?</Text>
             <CustomBlueButton title={"Registrarse"}
-            onPress={() => navigation.navigate("Register")}
+                              onPress={() => navigation.navigate("Register")}
             />
             <Text style={styles.normalText}>¿Ha estado aquí antes?</Text>
             <CustomGreenButton title={"Iniciar sesión"}
-                    onPress={() => navigation.navigate("Login")}
+                               onPress={() => navigation.navigate("Login")}
             />
         </View>
     )
@@ -51,10 +53,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    logoImage: {
+        aspectRatio: 1,
+        height: hp(70),
+
+    },
     normalText: {
         fontFamily: "OpenSans-Regular",
         fontStyle: "normal",
-        fontSize: 24.4,
+        fontSize: 22,
 
     }
 });

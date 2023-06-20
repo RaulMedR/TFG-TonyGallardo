@@ -4,6 +4,7 @@ import {useState} from "react";
 import {auth} from "../utils/firebaseConfig";
 import Toast from "react-native-root-toast";
 import {signInWithEmailAndPassword} from 'firebase/auth'
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
 export default function LoginPage({navigation}) {
 
@@ -16,7 +17,7 @@ export default function LoginPage({navigation}) {
             Toast.show('Ha iniciado sesión correctamente', {
                 duration: Toast.durations.SHORT
             })
-            navigation.navigate("Home")
+            navigation.navigate("Main")
         } catch (error) {
             Toast.show('Ha habido algún error: ' + error.toString(), {
                 duration: Toast.durations.LONG
@@ -56,18 +57,19 @@ const styles = StyleSheet.create({
     titlesView: {
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 100
+        maxWidth: wp(95),
+        marginBottom: hp(5)
     },
     title1: {
         fontFamily: "Lobster-Regular",
         color: "#00DAE8",
-        fontSize: 36,
+        fontSize: 40,
         marginBottom: 28,
         textAlign: "center"
     },
     title2: {
         fontFamily: "Roboto-Bold",
-        fontSize: 36,
+        fontSize: 25,
         textAlign: "center",
         color: "#A8A8A8"
 
@@ -89,13 +91,13 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: "#52E23E",
         backgroundColor: "#F8F8F8",
-        width: 354,
-        height: 67,
+        width: wp(85),
+        height: wp(85) * 0.2,
         paddingLeft: 22,
         paddingRight: 22,
         fontStyle: "normal",
         fontFamily: "OpenSans-Regular",
         fontSize: 20,
-        marginBottom: 38,
+        marginBottom: hp(3),
     }
 });
