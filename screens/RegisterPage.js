@@ -2,8 +2,9 @@ import {Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import CustomBlueButton from "../components/CustomBlueButton";
 import {useState} from "react";
 import Toast from "react-native-root-toast";
-import {auth} from "../utils/firebaseConfig";
+import {auth, db} from "../utils/firebaseConfig";
 import {createUserWithEmailAndPassword} from 'firebase/auth'
+import {doc, setDoc} from 'firebase/firestore'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 export default function RegisterPage({navigation}) {
@@ -18,11 +19,16 @@ export default function RegisterPage({navigation}) {
             })
         } else {
             try {
-                await createUserWithEmailAndPassword(auth, email, password)
+                let user = await createUserWithEmailAndPassword(auth, email, password)
                 Toast.show('Se ha registrado correctamente', {
                     duration: Toast.durations.SHORT
                 })
+                await setDoc(doc(db, "users", user.user.uid), {
+                    scannedPlants: [],
+                    additionalInfo: false,
+                })
                 navigation.navigate("Main")
+
 
             } catch (error) {
                 Toast.show('Ha habido algún error: ' + error.toString(), {

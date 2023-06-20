@@ -29,7 +29,6 @@ export default function HomePage({navigation}) {
         if (user) {
             navigation.navigate("Main")
         }
-
     })
     return (
         <View style={styles.container} onLayout={onLayoutRootView}>

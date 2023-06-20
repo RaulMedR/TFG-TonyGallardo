@@ -3,22 +3,44 @@ import RoundedProfileChart from "../components/RoundedProfileChart";
 import {useState} from "react";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import CustomBlueButton from "../components/CustomBlueButton";
+import {onAuthStateChanged} from "firebase/auth";
+import {collection, addDoc} from "firebase/firestore"
+import {auth, db} from "../utils/firebaseConfig";
 
 export default function ProfilePage() {
-    //const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null)
+    const [userName, setUserName] = useState('')
+    const [userPhoto, setUserPhoto] = useState('')
     const [suggestion, setSuggestion] = useState('')
 
-    const handleSuggestion = async () => {
+    onAuthStateChanged(auth, (user) => {
+        setUser(user)
+        if(user.displayName != null) {
+            setUserName(user.displayName)
+        } else {
+            setUserName("Nombre")
+        }
+        if(user.photoURL != null) {
+            setUserPhoto(user.photoURL)
+        }
+    })
 
+    const handleSuggestion = async () => {
+        await addDoc(collection(db, "suggestions"), {
+            uid: user.uid,
+            message: suggestion.trim()
+        })
+        setSuggestion('')
     }
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <Image
-                    source={require("../assets/images/logo-app.png")}
+                    source={userPhoto ? userPhoto : require("../assets/images/logo-app.png")}
                     style={styles.profileImage}
                 />
-                <Text style={styles.nameText}>Nombre</Text>
+
+                <Text style={styles.nameText}>{userName}</Text>
             </View>
             <RoundedProfileChart/>
 
