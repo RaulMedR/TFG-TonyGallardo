@@ -1,14 +1,18 @@
 import {StyleSheet, Text, View} from "react-native";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
+import {useContext} from "react";
+import PlantContext from "./PlantContext";
 
 export default function RoundedProfileChart() {
+    const {scannedPlants, totalPlants} = useContext(PlantContext)
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Plantas</Text>
             <View style={styles.textContainer}>
-                <Text style={styles.textNumber}>14</Text>
+                <Text style={styles.textNumber}>{scannedPlants}</Text>
                 <Text style={styles.textNumber}>/</Text>
-                <Text style={styles.textNumber}>55</Text>
+                <Text style={styles.textNumber}>{totalPlants}</Text>
             </View>
 
         </View>
