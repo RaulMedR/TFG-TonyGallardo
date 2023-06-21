@@ -1,26 +1,27 @@
 import {Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import RoundedProfileChart from "../components/RoundedProfileChart";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
-import CustomBlueButton from "../components/CustomBlueButton";
+import CustomButton from "../components/CustomButton";
 import {onAuthStateChanged} from "firebase/auth";
-import {collection, addDoc} from "firebase/firestore"
+import {addDoc, collection} from "firebase/firestore"
 import {auth, db} from "../utils/firebaseConfig";
+import PlantContext from "../components/PlantContext";
 
 export default function ProfilePage() {
-    const [user, setUser] = useState(null)
+    const {user, setUser} = useContext(PlantContext)
     const [userName, setUserName] = useState('')
     const [userPhoto, setUserPhoto] = useState('')
     const [suggestion, setSuggestion] = useState('')
 
     onAuthStateChanged(auth, (user) => {
         setUser(user)
-        if(user.displayName != null) {
+        if (user.displayName != null) {
             setUserName(user.displayName)
         } else {
             setUserName("Nombre")
         }
-        if(user.photoURL != null) {
+        if (user.photoURL != null) {
             setUserPhoto(user.photoURL)
         }
     })
@@ -46,7 +47,7 @@ export default function ProfilePage() {
 
             <TextInput value={suggestion} onChangeText={setSuggestion} style={styles.textInput}
                        placeholder={"Escribe una sugerencia o queja..."} multiline={true} textAlignVertical={"top"}/>
-            <CustomBlueButton title={"Enviar"} onPress={handleSuggestion}/>
+            <CustomButton title={"Enviar"} onPress={handleSuggestion} color={"#00DAE8"}/>
             <Pressable onPress={() => {
             }}>
                 <Text style={styles.buttonText}>Editar perfil</Text>
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
         color: "#52E23E"
     },
     nameText: {
-        fontFamily: "Roboto-Bold",
+        fontFamily: "Roboto-Regular",
         fontSize: 20,
         color: "#A8A8A8",
     }

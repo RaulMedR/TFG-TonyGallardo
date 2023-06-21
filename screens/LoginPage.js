@@ -1,10 +1,10 @@
 import {Pressable, StyleSheet, Text, TextInput, View} from "react-native";
-import CustomGreenButton from "../components/CustomGreenButton";
 import {useState} from "react";
 import {auth} from "../utils/firebaseConfig";
 import Toast from "react-native-root-toast";
 import {signInWithEmailAndPassword} from 'firebase/auth'
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
+import CustomButton from "../components/CustomButton";
 
 export default function LoginPage({navigation}) {
 
@@ -36,7 +36,7 @@ export default function LoginPage({navigation}) {
                        style={styles.textInput} placeholder={"correo electrónico"}/>
             <TextInput autoCapitalize={"none"} value={password} onChangeText={setPassword} secureTextEntry={true}
                        textContentType={"password"} style={styles.textInput} placeholder={"contraseña"}/>
-            <CustomGreenButton title={"Iniciar sesión"} onPress={handleLogin}/>
+            <CustomButton title={"Iniciar sesión"} onPress={handleLogin} color={"#52E23E"}/>
             <Text style={styles.normalText}>¿No tiene cuenta?</Text>
             <Pressable onPress={() => {
                 navigation.navigate("Register")

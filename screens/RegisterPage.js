@@ -1,11 +1,11 @@
 import {Pressable, StyleSheet, Text, TextInput, View} from "react-native";
-import CustomBlueButton from "../components/CustomBlueButton";
+import CustomButton from "../components/CustomButton";
 import {useState} from "react";
 import Toast from "react-native-root-toast";
 import {auth, db} from "../utils/firebaseConfig";
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import {doc, setDoc} from 'firebase/firestore'
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
 export default function RegisterPage({navigation}) {
     const [email, setEmail] = useState('')
@@ -54,7 +54,7 @@ export default function RegisterPage({navigation}) {
             <TextInput value={repeatPassword} onChangeText={setRepeatPassword} autoCapitalize={"none"}
                        secureTextEntry={true} textContentType={"password"}
                        style={styles.textInput} placeholder={"repite contraseña"}/>
-            <CustomBlueButton title={"Registrarse"} onPress={handleRegister}/>
+            <CustomButton title={"Registrarse"} onPress={handleRegister} color={"#00DAE8"}/>
             <Text style={styles.normalText}>¿Ya tiene cuenta?</Text>
             <Pressable onPress={() => {
                 navigation.navigate("Login")
