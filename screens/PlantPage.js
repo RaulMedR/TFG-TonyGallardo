@@ -11,7 +11,7 @@ export default function PlantPage({route}) {
 
             <Text style={styles.colloquialName}>{plant.colloquialName}</Text>
             <Text style={[styles.normalText, {marginBottom: hp(2)}]}>{plant.scientificName}</Text>
-            <Image style={styles.plantImage} source={{uri : photo}}/>
+            <Image style={styles.plantImage} source={photo ? {uri: photo} : require("../assets/images/logo-app.png")}/>
 
 
             <Text style={[styles.normalText, {color: "#52E23E"}]}>{plant.type}</Text>

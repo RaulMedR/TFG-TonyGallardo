@@ -5,6 +5,7 @@ import {PlantProvider} from "./PlantContext";
 import PlantsDirectoryPage from "../screens/PlantsDirectoryPage";
 import PlantPage from "../screens/PlantPage";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import QrScanPage from "../screens/QrScanPage";
 
 
 const Tab = createBottomTabNavigator()
@@ -17,6 +18,7 @@ function PlantStackNavigator() {
         })}>
             <Stack.Screen name="PlantsDirectoryPage" component={PlantsDirectoryPage}/>
             <Stack.Screen name="PlantDetail" component={PlantPage}/>
+            <Stack.Screen name="QrScan" component={QrScanPage}/>
         </Stack.Navigator>
     );
 }

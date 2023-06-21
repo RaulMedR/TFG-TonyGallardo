@@ -1,6 +1,6 @@
 import {Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
-import {collection, doc, getDoc, onSnapshot} from "firebase/firestore";
+import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
 import {useContext, useEffect, useState} from "react";
 import CustomCard from "../components/CustomCard";
@@ -15,29 +15,32 @@ export default function PlantsDirectoryPage({navigation}) {
     const [plantReminderHeight, setPlantReminderHeight] = useState(hp(40))
 
     useEffect(() => {
-        getDoc(doc(db, "users", user.uid)).then((userDoc) => {
-            setUserPlants(userDoc.data()["scannedPlants"])
-            if(userPlants.length > 0){
-                setPlantReminderHeight(hp(20))
-            } else {
-                setPlantReminderHeight(hp(72))
-            }
-        })
+        if(userPlants.length !== scannedPlants){
+            getDoc(doc(db, "users", user.uid)).then((userDoc) => {
+                setUserPlants(userDoc.data()["scannedPlants"])
+                if (userPlants.length > 0) {
+                    setPlantReminderHeight(hp(20))
+                } else {
+                    setPlantReminderHeight(hp(72))
+                }
+            })
+        }
 
     }, []);
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, "plants"), (snapshot) => {
-            const plantsData = [];
-            snapshot.forEach((doc) => {
-                if (userPlants.includes(doc.id)) {
-                    plantsData.push({id: doc.id, ...doc.data()});
-                }
-            });
-            setPlants(plantsData);
-        });
+        if(plants.length !== totalPlants) {
+            getDocs(collection(db, "plants")).then((docs) => {
+                const plantsData = [];
+                docs.forEach((doc) => {
+                    if (userPlants.includes(doc.id)) {
+                        plantsData.push({id: doc.id, ...doc.data()});
+                    }
+                });
+                setPlants(plantsData);
+            })
+        }
 
-        return () => unsubscribe();
-    }, [userPlants]);
+    }, []);
 
     const renderPlantCard = (plant, index) => {
         const color = index % 2 === 0 ? "#52E23E" : "#00DAE8"
@@ -54,6 +57,7 @@ export default function PlantsDirectoryPage({navigation}) {
                 <View style={styles.cornerCircle}/>
             </View>
             <Pressable style={styles.qrIconContainer} onPress={() => {
+                navigation.navigate("QrScan")
 
             }}>
                 <Image style={styles.qrIcon} source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
@@ -68,20 +72,18 @@ export default function PlantsDirectoryPage({navigation}) {
                 {plants.map((plant, index) => renderPlantCard(plant, index)
                 )}
                 {
-                    scannedPlants < totalPlants ? (
+                    scannedPlants < totalPlants && (
                         <View style={[styles.plantReminder, {height: plantReminderHeight}]}>
                             <AutoSizeText style={styles.textReminder} parentWidth={wp(90)}
                                           numberOfLines={1}
                                           mode={ResizeTextMode.group}>¡Todavía te quedan plantas por ver!</AutoSizeText>
                             <Pressable style={styles.qrIconContainerReminder} onPress={() => {
-
+                                navigation.navigate("QrScan")
                             }}>
                                 <Image source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
                             </Pressable>
 
                         </View>
-                    ) : (
-                        <View></View>
                     )
                 }
             </ScrollView>

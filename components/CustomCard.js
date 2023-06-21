@@ -10,13 +10,16 @@ export default function CustomCard({plant, color, cardStyle, navigation}) {
 
 
     useEffect(() => {
-        const unsubscribe = () => {
-            getDownloadURL(ref(storage, 'plants/' + plant.id + '.jpg')).then((url) => {
-                setPhoto(url);
-            })
+        if (photo === null){
+            const unsubscribe = () => {
+                getDownloadURL(ref(storage, 'plants/' + plant.id + '.jpg')).then((url) => {
+                    setPhoto(url);
+                })
 
-        };
-        unsubscribe();
+            };
+            unsubscribe();
+        }
+
 
     }, []);
 
