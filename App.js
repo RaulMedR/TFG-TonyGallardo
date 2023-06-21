@@ -5,6 +5,7 @@ import LoginPage from "./screens/LoginPage";
 import RegisterPage from "./screens/RegisterPage";
 import {RootSiblingParent} from 'react-native-root-siblings'
 import BottomTabNavigator from "./components/BottomTabNavigator";
+import PlantPage from "./screens/PlantPage";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -28,6 +29,8 @@ export default function App() {
                     />
                     <Stack.Screen
                         name={"Main"} component={BottomTabNavigator}/>
+                    <Stack.Screen
+                        name={"Plant"} component={PlantPage}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </RootSiblingParent>

@@ -1,17 +1,17 @@
-import {Image, StyleSheet, View} from "react-native";
+import {Image, Pressable, StyleSheet, View} from "react-native";
 import {useEffect, useState} from "react";
 import {storage} from "../utils/firebaseConfig";
 import {getDownloadURL, ref} from "firebase/storage";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
 
-export default function CustomCard({id, name, color, cardStyle}) {
+export default function CustomCard({plant, color, cardStyle, navigation}) {
     const [photo, setPhoto] = useState('')
 
 
     useEffect(() => {
         const unsubscribe = () => {
-            getDownloadURL(ref(storage, 'plants/' + id + '.jpg')).then((url) => {
+            getDownloadURL(ref(storage, 'plants/' + plant.id + '.jpg')).then((url) => {
                 setPhoto(url);
             })
 
@@ -22,22 +22,27 @@ export default function CustomCard({id, name, color, cardStyle}) {
 
 
     return (
-        <View style={[styles.container, cardStyle]}>
-            <View style={[styles.cardContainer, {borderColor: color}]}>
-                <View style={styles.imageContainer}>
-                    <Image source={photo ? {uri: photo} : require("../assets/images/logo-app.png")}
-                           style={styles.plantImage}/>
-                </View>
+        <Pressable onPress={() => {
+            navigation.navigate('PlantDetail', {plant: plant, photo: photo})
 
-                <View style={styles.textContainer}>
-                    <AutoSizeText style={styles.plantName}
-                                  fontSizePresets={[20, 30, 40]}
-                                  numberOfLines={2}
-                                  mode={ResizeTextMode.preset_font_sizes}>{name}</AutoSizeText>
-                </View>
+        }}>
+            <View style={[styles.container, cardStyle]}>
+                <View style={[styles.cardContainer, {borderColor: color}]}>
+                    <View style={styles.imageContainer}>
+                        <Image source={photo ? {uri: photo} : require("../assets/images/logo-app.png")}
+                               style={styles.plantImage}/>
+                    </View>
 
+                    <View style={styles.textContainer}>
+                        <AutoSizeText style={styles.plantName}
+                                      fontSizePresets={[20, 30, 40]}
+                                      numberOfLines={2}
+                                      mode={ResizeTextMode.preset_font_sizes}>{plant.colloquialName}</AutoSizeText>
+                    </View>
+
+                </View>
             </View>
-        </View>
+        </Pressable>
     )
 
 

@@ -8,7 +8,7 @@ import PlantContext from "../components/PlantContext";
 import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
 
 
-export default function PlantsDirectoryPage() {
+export default function PlantsDirectoryPage({navigation}) {
     const {user, totalPlants, scannedPlants} = useContext(PlantContext)
     const [plants, setPlants] = useState([])
     const [userPlants, setUserPlants] = useState([])
@@ -17,8 +17,11 @@ export default function PlantsDirectoryPage() {
     useEffect(() => {
         getDoc(doc(db, "users", user.uid)).then((userDoc) => {
             setUserPlants(userDoc.data()["scannedPlants"])
-            setPlantReminderHeight(Math.max(hp(40), hp(72) - userPlants.length * wp(70) * 0.4,))
-
+            if(userPlants.length > 0){
+                setPlantReminderHeight(hp(20))
+            } else {
+                setPlantReminderHeight(hp(72))
+            }
         })
 
     }, []);
@@ -41,9 +44,7 @@ export default function PlantsDirectoryPage() {
         const cardStyle = index % 2 === 0 ? styles.evenCard : styles.oddCard
 
         return (
-            <CustomCard key={plant.id} cardStyle={cardStyle} color={color} name={plant.colloquialName}
-                        origin={plant.origin}
-                        type={plant.type} id={plant.id}/>
+            <CustomCard key={plant.id} cardStyle={cardStyle} color={color} plant={plant} navigation={navigation}/>
         )
     }
 
@@ -128,7 +129,6 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: hp(40),
     },
     textReminder: {
         fontFamily: "OpenSans-Bold",
