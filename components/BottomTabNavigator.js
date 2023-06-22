@@ -8,6 +8,9 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import QrScanPage from "../screens/QrScanPage";
 import NewsPage from "../screens/NewsPage";
 import EditProfilePage from "../screens/EditProfilePage";
+import MapPage from "../screens/MapPage";
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
+import {Image, StyleSheet, TouchableOpacity, View} from "react-native";
 
 
 const Tab = createBottomTabNavigator()
@@ -27,6 +30,20 @@ function PlantStackNavigator() {
 
 const Stack2 = createNativeStackNavigator();
 
+const CustomTabBarButton = ({children, onPress}) => (
+    <TouchableOpacity
+        style={styles.mapTabStyle}
+        onPress={onPress}
+    >
+
+        <View style={styles.mapTabStyleView}>
+            {children}
+        </View>
+
+    </TouchableOpacity>
+
+)
+
 function ProfileStackNavigator() {
     return (
         <Stack2.Navigator screenOptions={() => ({
@@ -44,12 +61,80 @@ export default function BottomTabNavigator() {
 
             <Tab.Navigator screenOptions={() => ({
                 headerShown: false,
-                tabBarActiveTintColor: 'red',
+                tabBarShowLabel: false,
+                tabBarStyle: {
+                    paddingHorizontal: wp(3),
+                    position: 'absolute',
+                    elevation: 0,
+                    backgroundColor: "#FFFFFF",
+                    height: hp(8),
+                    paddingBottom: hp(3),
+
+
+                }
             })}>
-                <Tab.Screen name="MainPage" component={MainPage}/>
-                <Tab.Screen name="PlantDirectory" component={PlantStackNavigator}/>
-                <Tab.Screen name="News" component={NewsPage}/>
-                <Tab.Screen name="Profile" component={ProfileStackNavigator}/>
+                <Tab.Screen name="MainPage" component={MainPage} options={{
+                    tabBarIcon: ({focused}) => (
+                        <View style={styles.normalView}>
+                            <Image source={require("../assets/images/home-icon.png")} resizeMode={"contain"}
+                                   style={[styles.normalImage, {
+                                       tintColor: focused ? "#52E23E" : "#00DAE8"
+                                   }]
+                                   }/>
+                        </View>
+                    )
+                }
+                }/>
+                <Tab.Screen name="PlantDirectory" component={PlantStackNavigator} options={{
+                    tabBarIcon: ({focused}) => (
+                        <View style={styles.normalView}>
+                            <Image source={require("../assets/images/leaf-icon.png")} resizeMode={"contain"}
+                                   style={[styles.normalImage, {
+                                       tintColor: focused ? "#52E23E" : "#00DAE8"
+                                   }]
+                                   }/>
+                        </View>
+                    )
+                }
+                }/>
+                <Tab.Screen name="Map" component={MapPage} options={{
+                    tabBarIcon: ({focused}) => (
+                        <Image source={require("../assets/images/map-icon.png")} resizeMode={"contain"}
+                               style={[styles.mapTabImage, {
+                                   tintColor: focused ? "#52E23E" : "#00DAE8"
+                               }]
+                               }/>
+                    ),
+                    tabBarButton: (props) => (
+                        <CustomTabBarButton {...props} />
+                    )
+
+                }
+                }/>
+                <Tab.Screen name="News" component={NewsPage} options={{
+                    tabBarIcon: ({focused}) => (
+                        <View style={styles.normalView}>
+                            <Image source={require("../assets/images/news-icon.png")} resizeMode={"contain"}
+                                   style={[styles.normalImage, {
+                                       tintColor: focused ? "#52E23E" : "#00DAE8"
+                                   }]
+                                   }/>
+                        </View>
+                    )
+                }
+                }/>
+                <Tab.Screen name="Profile" component={ProfileStackNavigator} options={{
+                    tabBarIcon: ({focused}) => (
+                        <View style={styles.normalView}>
+                            <Image source={require("../assets/images/profile-icon.png")} resizeMode={"contain"}
+                                   style={[styles.normalImage, {
+                                       tintColor: focused ? "#52E23E" : "#00DAE8"
+                                   }]
+                                   }/>
+                        </View>
+                    )
+                }
+                }/>
 
 
             </Tab.Navigator>
@@ -57,3 +142,29 @@ export default function BottomTabNavigator() {
     )
 
 }
+
+const styles = StyleSheet.create({
+    normalView: {
+        top: hp(1.5)
+    },
+    normalImage: {
+        width: wp(10),
+        height: wp(10)
+    },
+    mapTabStyle: {
+        top: -hp(2),
+    },
+    mapTabStyleView: {
+        backgroundColor: "#FFFFFF",
+        width: wp(20),
+        height: wp(20),
+        borderRadius: wp(10),
+        borderWidth: 0.5,
+        borderColor: "#C7C7C7"
+    },
+    mapTabImage: {
+        width: wp(16),
+        height: wp(16),
+    }
+
+})
