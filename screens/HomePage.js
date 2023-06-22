@@ -7,7 +7,9 @@ import {onAuthStateChanged} from 'firebase/auth'
 import {auth} from "../utils/firebaseConfig";
 import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch((error) =>{
+    alert("HomePageError: " + error)
+});
 export default function HomePage({navigation}) {
     let [fontsLoaded] = useFonts({
         "OpenSans-Regular": require("../assets/fonts/OpenSans-Regular.ttf"),

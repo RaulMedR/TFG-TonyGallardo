@@ -10,35 +10,48 @@ import PlantContext from "../components/PlantContext";
 
 const scannerAspectRatio = hp(100) / wp(100);
 
-export default function QrScanPage({navigation}) {
+export default function QrScanPage({route, navigation}) {
     const [scannedData, setScannedData] = useState(null)
-    const [photoUrl, setPhotoUrl] = useState('')
     const {user, scannedPlants, setScannedPlants} = useContext(PlantContext)
+    const [scanningEnabled, setScanningEnabled] = useState(true);
 
     useEffect(() => {
-        (async () => {
-            const {status} = await BarCodeScanner.requestPermissionsAsync();
-            if (status !== 'granted') {
-                alert('Se requiere permiso para acceder a la cámara.');
-            }
-        })();
-    }, []);
+        return navigation.addListener('focus', () => {
+            (async () => {
+                if (!scanningEnabled) {
+                    navigation.reset()
+                }
+                const {status} = await BarCodeScanner.requestPermissionsAsync();
+                if (status !== 'granted') {
+                    alert('Se requiere permiso para acceder a la cámara.');
+                }
+            })();
+        })
+    }, [navigation]);
 
     const handleBarCodeScanned = async ({type, data}) => {
-        if(typeof type === "string"){
-            setScannedData(data);
-        }
-        if (scannedData) {
-            await updateDoc(doc(db, "users", user.uid), {
-                scannedPlants: arrayUnion(scannedData)
-            })
-            setScannedPlants(scannedPlants + 1)
-            await getDownloadURL(ref(storage, 'plants/' + data + '.jpg')).then((url) => {
-                setPhotoUrl(url);
-            })
-            getDoc(doc(db, "plants", data)).then((doc) => {
-                navigation.navigate("PlantDetail", {plant: doc.data(), photo: photoUrl})
-            })
+        let scanned = false
+        if (scanningEnabled) {
+            if (typeof type === "number") {
+                setScannedData(data);
+                setScanningEnabled(false)
+                scanned = true
+            }
+            if (data && scanned) {
+                await updateDoc(doc(db, "users", user.uid), {
+                    scannedPlants: arrayUnion(data)
+                })
+                setScannedPlants(scannedPlants + 1)
+                const photoUrl = await getDownloadURL(ref(storage, 'plants/' + data + '.jpg'))
+                getDoc(doc(db, "plants", data)).then((doc) => {
+                    navigation.navigate("PlantDetail", {
+                        plant: doc.data(),
+                        photo: photoUrl,
+                        fromQrScanPage: true,
+                        origin: route.params.origin
+                    })
+                })
+            }
         }
     };
 
@@ -53,7 +66,8 @@ export default function QrScanPage({navigation}) {
                     <BarCodeScanner style={StyleSheet.absoluteFillObject}
                                     ratio={scannerAspectRatio}
                                     onBarCodeScanned={handleBarCodeScanned}
-                                    barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}/>
+                                    barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+                    />
                 </View>
                 <View style={styles.overlay}>
                     <View style={styles.scanSquare}/>

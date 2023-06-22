@@ -1,6 +1,6 @@
 import {Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
-import {collection, doc, getDoc, getDocs} from "firebase/firestore";
+import {doc, getDoc} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
 import {useContext, useEffect, useState} from "react";
 import CustomCard from "../components/CustomCard";
@@ -13,34 +13,53 @@ export default function PlantsDirectoryPage({navigation}) {
     const [plants, setPlants] = useState([])
     const [userPlants, setUserPlants] = useState([])
     const [plantReminderHeight, setPlantReminderHeight] = useState(hp(40))
+    const [prevUserPlantsValue, setPrevUserPlantsValue] = useState(0)
 
     useEffect(() => {
-        if(userPlants.length !== scannedPlants){
-            getDoc(doc(db, "users", user.uid)).then((userDoc) => {
-                setUserPlants(userDoc.data()["scannedPlants"])
-                if (userPlants.length > 0) {
-                    setPlantReminderHeight(hp(20))
-                } else {
-                    setPlantReminderHeight(hp(72))
-                }
-            })
+        let scannedPlantsData = []
+        const fetchUserPlants = async () => {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            scannedPlantsData = await userDoc.data()["scannedPlants"];
+            setUserPlants(scannedPlantsData);
+            if (scannedPlantsData.length > 0) {
+                setPlantReminderHeight(hp(20));
+            } else {
+                setPlantReminderHeight(hp(72));
+            }
+
         }
 
-    }, []);
+        if (user) {
+            fetchUserPlants().catch((error) => {
+                console.error("Error al obtener los datos del usuario:", error);
+            });
+        }
+
+    }, [user]);
+
     useEffect(() => {
-        if(plants.length !== totalPlants) {
-            getDocs(collection(db, "plants")).then((docs) => {
-                const plantsData = [];
-                docs.forEach((doc) => {
-                    if (userPlants.includes(doc.id)) {
-                        plantsData.push({id: doc.id, ...doc.data()});
-                    }
-                });
-                setPlants(plantsData);
+        const fetchPlants = async () => {
+            const promises = userPlants.map((value) => {
+                return getDoc(doc(db, "plants", value)).then((plant) => {
+                    return {id: plant.id, ...plant.data()};
+                })
             })
+            const resolvedPlants = await Promise.all(promises);
+            setPlants(resolvedPlants);
         }
 
-    }, []);
+        if (userPlants.length !== prevUserPlantsValue) {
+            setPrevUserPlantsValue(userPlants.length)
+            fetchPlants().catch((error) => {
+                console.error("Error al obtener los datos del usuario:", error);
+            });
+        }
+
+    }, [userPlants]);
+
+
+
+
 
     const renderPlantCard = (plant, index) => {
         const color = index % 2 === 0 ? "#52E23E" : "#00DAE8"
@@ -57,7 +76,7 @@ export default function PlantsDirectoryPage({navigation}) {
                 <View style={styles.cornerCircle}/>
             </View>
             <Pressable style={styles.qrIconContainer} onPress={() => {
-                navigation.navigate("QrScan")
+                navigation.navigate("QrScan", {origin: "PlantsDirectoryPage"})
 
             }}>
                 <Image style={styles.qrIcon} source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
@@ -78,7 +97,7 @@ export default function PlantsDirectoryPage({navigation}) {
                                           numberOfLines={1}
                                           mode={ResizeTextMode.group}>¡Todavía te quedan plantas por ver!</AutoSizeText>
                             <Pressable style={styles.qrIconContainerReminder} onPress={() => {
-                                navigation.navigate("QrScan")
+                                navigation.navigate("QrScan", {origin: "PlantsDirectoryPage"})
                             }}>
                                 <Image source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
                             </Pressable>

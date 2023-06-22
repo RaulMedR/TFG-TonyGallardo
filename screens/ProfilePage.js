@@ -1,21 +1,20 @@
 import {Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import RoundedProfileChart from "../components/RoundedProfileChart";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import CustomButton from "../components/CustomButton";
-import {onAuthStateChanged} from "firebase/auth";
 import {addDoc, collection} from "firebase/firestore"
-import {auth, db} from "../utils/firebaseConfig";
+import {db} from "../utils/firebaseConfig";
 import PlantContext from "../components/PlantContext";
+import {useIsFocused} from "@react-navigation/native";
 
-export default function ProfilePage() {
-    const {user, setUser} = useContext(PlantContext)
+export default function ProfilePage({navigation}) {
+    const {user} = useContext(PlantContext)
     const [userName, setUserName] = useState('')
     const [userPhoto, setUserPhoto] = useState('')
     const [suggestion, setSuggestion] = useState('')
-
-    onAuthStateChanged(auth, (user) => {
-        setUser(user)
+    const isFocused = useIsFocused();
+    useEffect(() => {
         if (user.displayName != null) {
             setUserName(user.displayName)
         } else {
@@ -24,7 +23,8 @@ export default function ProfilePage() {
         if (user.photoURL != null) {
             setUserPhoto(user.photoURL)
         }
-    })
+
+    }, [isFocused]);
 
     const handleSuggestion = async () => {
         await addDoc(collection(db, "suggestions"), {
@@ -37,7 +37,7 @@ export default function ProfilePage() {
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <Image
-                    source={userPhoto ? userPhoto : require("../assets/images/logo-app.png")}
+                    source={userPhoto ? {uri : userPhoto} : require("../assets/images/logo-app.png")}
                     style={styles.profileImage}
                 />
 
@@ -49,6 +49,7 @@ export default function ProfilePage() {
                        placeholder={"Escribe una sugerencia o queja..."} multiline={true} textAlignVertical={"top"}/>
             <CustomButton title={"Enviar"} onPress={handleSuggestion} color={"#00DAE8"}/>
             <Pressable onPress={() => {
+                navigation.navigate("EditProfile")
             }}>
                 <Text style={styles.buttonText}>Editar perfil</Text>
             </Pressable>
@@ -75,6 +76,7 @@ const styles = StyleSheet.create({
         borderRadius: wp(30),
         borderWidth: 2,
         borderColor: '#00DAE8',
+        marginBottom: hp(1)
     },
     textInput: {
         borderRadius: 30,

@@ -10,9 +10,9 @@ export default function RoundedProfileChart() {
         <View style={styles.container}>
             <Text style={styles.title}>Plantas</Text>
             <View style={styles.textContainer}>
-                <Text style={styles.textNumber}>{scannedPlants}</Text>
+                <Text style={styles.textNumber}>{scannedPlants.toString()}</Text>
                 <Text style={styles.textNumber}>/</Text>
-                <Text style={styles.textNumber}>{totalPlants}</Text>
+                <Text style={styles.textNumber}>{totalPlants.toString()}</Text>
             </View>
 
         </View>

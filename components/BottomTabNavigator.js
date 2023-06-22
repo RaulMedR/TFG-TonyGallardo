@@ -6,6 +6,8 @@ import PlantsDirectoryPage from "../screens/PlantsDirectoryPage";
 import PlantPage from "../screens/PlantPage";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import QrScanPage from "../screens/QrScanPage";
+import NewsPage from "../screens/NewsPage";
+import EditProfilePage from "../screens/EditProfilePage";
 
 
 const Tab = createBottomTabNavigator()
@@ -23,6 +25,19 @@ function PlantStackNavigator() {
     );
 }
 
+const Stack2 = createNativeStackNavigator();
+
+function ProfileStackNavigator() {
+    return (
+        <Stack2.Navigator screenOptions={() => ({
+            headerShown: false,
+        })}>
+            <Stack2.Screen name="ProfilePage" component={ProfilePage}/>
+            <Stack2.Screen name="EditProfile" component={EditProfilePage}/>
+        </Stack2.Navigator>
+    )
+}
+
 export default function BottomTabNavigator() {
     return (
         <PlantProvider>
@@ -33,7 +48,8 @@ export default function BottomTabNavigator() {
             })}>
                 <Tab.Screen name="MainPage" component={MainPage}/>
                 <Tab.Screen name="PlantDirectory" component={PlantStackNavigator}/>
-                <Tab.Screen name="Profile" component={ProfilePage}/>
+                <Tab.Screen name="News" component={NewsPage}/>
+                <Tab.Screen name="Profile" component={ProfileStackNavigator}/>
 
 
             </Tab.Navigator>

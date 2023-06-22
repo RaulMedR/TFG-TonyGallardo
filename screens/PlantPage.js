@@ -1,9 +1,25 @@
-import {Image, ScrollView, StyleSheet, Text, View} from "react-native";
+import {BackHandler, Image, ScrollView, StyleSheet, Text, View} from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
+import {useEffect} from "react";
 
-export default function PlantPage({route}) {
+export default function PlantPage({route, navigation}) {
     const{plant, photo} = route.params
 
+    const handleGoBack = () => {
+        if (route.params && route.params.fromQrScanPage) {
+            navigation.navigate(route.params.origin);
+            return true
+        }
+        return false
+    };
+
+    useEffect(() => {
+        BackHandler.addEventListener("hardwareBackPress", handleGoBack);
+
+        return () => {
+            BackHandler.removeEventListener("hardwareBackPress", handleGoBack);
+        };
+    }, []);
 
     return(
         <ScrollView alwaysBounceVertical={false} style={styles.scrollContainer}>

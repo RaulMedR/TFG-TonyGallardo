@@ -1,7 +1,7 @@
-import {createContext, useState} from "react";
+import {createContext, useEffect, useState} from "react";
 import {onAuthStateChanged} from "firebase/auth";
 import {auth, db} from "../utils/firebaseConfig";
-import {collection, doc, getDoc, getDocs} from "firebase/firestore";
+import {collection, doc, getDoc, getCountFromServer} from "firebase/firestore";
 
 
 const PlantContext = createContext()
@@ -11,12 +11,28 @@ export const PlantProvider = ({children}) => {
     const [user, setUser] = useState(null)
     const [totalPlants, setTotalPlants] = useState(0)
 
-    onAuthStateChanged(auth, async (user) => {
-        setUser(user)
-        setTotalPlants((await getDocs(collection(db, "plants")))?.docs?.length)
-        setScannedPlants((await getDoc(doc(db, "users", user.uid)))?.data()["scannedPlants"]?.length)
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setUser(user);
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const scannedPlantsData = userDoc.data()["scannedPlants"];
+                setScannedPlants(scannedPlantsData.length);
+            } else {
+                setUser(null);
+                setScannedPlants(0);
+            }
+        });
 
-    })
+        return () => unsubscribe(); // Se cancela el listener al desmontar el componente
+    }, []);
+
+    useEffect(() => {
+        const plantsCollection = collection(db, "plants")
+        getCountFromServer(plantsCollection).then((count) => {
+            setTotalPlants(count.data().count)
+        })
+    }, []);
 
     return(
         <PlantContext.Provider value={{scannedPlants, setScannedPlants, totalPlants, setTotalPlants, user, setUser}}>
