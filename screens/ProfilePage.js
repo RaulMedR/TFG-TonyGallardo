@@ -6,25 +6,25 @@ import CustomButton from "../components/CustomButton";
 import {addDoc, collection} from "firebase/firestore"
 import {db} from "../utils/firebaseConfig";
 import PlantContext from "../components/PlantContext";
-import {useIsFocused} from "@react-navigation/native";
 
 export default function ProfilePage({navigation}) {
     const {user} = useContext(PlantContext)
     const [userName, setUserName] = useState('')
     const [userPhoto, setUserPhoto] = useState('')
     const [suggestion, setSuggestion] = useState('')
-    const isFocused = useIsFocused();
     useEffect(() => {
-        if (user.displayName != null) {
-            setUserName(user.displayName)
-        } else {
-            setUserName("Nombre")
-        }
-        if (user.photoURL != null) {
-            setUserPhoto(user.photoURL)
-        }
+        return navigation.addListener('focus', () => {
+            if (user.displayName != null) {
+                setUserName(user.displayName)
+            } else {
+                setUserName("Nombre")
+            }
+            if (user.photoURL != null) {
+                setUserPhoto(user.photoURL)
+            }
+        })
 
-    }, [isFocused]);
+    }, [navigation]);
 
     const handleSuggestion = async () => {
         await addDoc(collection(db, "suggestions"), {
@@ -34,10 +34,10 @@ export default function ProfilePage({navigation}) {
         setSuggestion('')
     }
     return (
-        <View style={styles.container}>
+        <View style={styles.container} key={Math.random()}>
             <View style={styles.profileContainer}>
                 <Image
-                    source={userPhoto ? {uri : userPhoto} : require("../assets/images/logo-app.png")}
+                    source={userPhoto ? {uri: userPhoto} : require("../assets/images/logo-app.png")}
                     style={styles.profileImage}
                 />
 
@@ -64,9 +64,9 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        marginBottom: hp(2),
     },
     profileContainer: {
-        marginTop: hp(2),
         alignItems: 'center',
         marginBottom: hp(3)
     },

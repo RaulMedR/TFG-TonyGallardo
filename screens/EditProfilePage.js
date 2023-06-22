@@ -38,7 +38,7 @@ export default function EditProfilePage({navigation}) {
             uploadBytes(storageRef, blob).catch((error) => {
                 alert("Ha habido un error en la subida: " + error.toString())
             })
-            getDownloadURL(storageRef).then(async (downloadURL) => {
+            await getDownloadURL(storageRef).then(async (downloadURL) => {
                 const updateData = {
                     displayName: name,
                     photoURL: downloadURL
@@ -62,7 +62,7 @@ export default function EditProfilePage({navigation}) {
             uploadBytes(storageRef, blob).catch((error) => {
                 alert("Ha habido un error en la subida: " + error.toString())
             })
-            getDownloadURL(storageRef).then(async (downloadURL) => {
+            await getDownloadURL(storageRef).then(async (downloadURL) => {
                 const updateData = {
                     photoURL: downloadURL
                 }
@@ -81,9 +81,9 @@ export default function EditProfilePage({navigation}) {
         <ScrollView alwaysBounceVertical={false} style={styles.scrollContainer}>
             <View style={styles.container}>
                 <AutoSizeText style={styles.textButton}
-                              fontSizePresets={[20, 30, 40]}
+                              minimumFontScale={16}
                               numberOfLines={2}
-                              mode={ResizeTextMode.preset_font_sizes}>Pulsa en la imagen y selecciona una nueva foto de
+                              mode={ResizeTextMode.min_font_size}>Pulsa en la imagen y selecciona una nueva foto de
                     perfil</AutoSizeText>
                 <Pressable onPress={pickImage}>
                     <Image source={profilePic ? {uri: profilePic} : require("../assets/images/logo-app.png")}
