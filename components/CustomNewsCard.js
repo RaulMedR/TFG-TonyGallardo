@@ -1,33 +1,29 @@
-import {Image, ScrollView, StyleSheet, View} from "react-native";
+import {Image, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
 
-export default function CustomNewsCard({news}){
-    return(
+export default function CustomNewsCard({news}) {
+    return (
 
         <View style={styles.container}>
-            <ScrollView style={styles.scrollContainer} alwaysBounceVertical={false}>
-
             <View style={styles.cardContainer}>
                 <View style={styles.imageContainer}>
                     <Image source={news.photo ? {uri: news.photo} : require("../assets/images/logo-app.png")}
                            style={styles.newsImage}/>
                 </View>
+
                 <View style={styles.textContainer}>
                     <AutoSizeText style={styles.newsTitle}
                                   fontSizePresets={[20, 30, 40]}
                                   numberOfLines={1}
                                   mode={ResizeTextMode.preset_font_sizes}>{news.title}</AutoSizeText>
-                    <AutoSizeText style={styles.newsText}
-                                  fontSizePresets={[13, 14, 16]}
-                                  numberOfLines={3}
-                                  mode={ResizeTextMode.preset_font_sizes}>{news.description}</AutoSizeText>
+                    <Text style={styles.newsText} adjustsFontSizeToFit={true}>{news.description}</Text>
 
                 </View>
 
+
             </View>
 
-            </ScrollView>
         </View>
 
     )
@@ -39,9 +35,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-    },
-    scrollContainer: {
-        padding: wp(2)
+        marginBottom: hp(2),
     },
     cardContainer: {
         display: "flex",
@@ -73,20 +67,18 @@ const styles = StyleSheet.create({
         borderRadius: wp(3),
     },
     textContainer: {
+        marginTop: hp(1),
         width: wp(55),
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
         alignItems: "center"
     },
     newsTitle: {
         marginLeft: wp(2),
         fontFamily: "OpenSans-Regular",
-        marginBottom: hp(1),
+        marginBottom: hp(0.5),
     },
     newsText: {
         marginLeft: wp(2),
         fontFamily: "OpenSans-Regular",
-        textAlign: "justify"
+        height: hp(10),
     }
 })

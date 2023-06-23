@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
         top: hp(12),
         width: wp(70),
         backgroundColor: "white",
-        elevation: 5,
         alignItems: "center",
         justifyContent: "center",
         paddingTop: hp(2),

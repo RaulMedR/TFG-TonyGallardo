@@ -34,7 +34,7 @@ export default function ProfilePage({navigation}) {
         setSuggestion('')
     }
     return (
-        <View style={styles.container} key={Math.random()}>
+        <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <Image
                     source={userPhoto ? {uri: userPhoto} : require("../assets/images/logo-app.png")}
@@ -44,7 +44,6 @@ export default function ProfilePage({navigation}) {
                 <Text style={styles.nameText}>{userName}</Text>
             </View>
             <RoundedProfileChart/>
-
             <TextInput value={suggestion} onChangeText={setSuggestion} style={styles.textInput}
                        placeholder={"Escribe una sugerencia o queja..."} multiline={true} textAlignVertical={"top"}/>
             <CustomButton title={"Enviar"} onPress={handleSuggestion} color={"#00DAE8"}/>
@@ -92,6 +91,7 @@ const styles = StyleSheet.create({
         fontFamily: "OpenSans-Regular",
         fontSize: 20,
         marginBottom: hp(3),
+
     },
     buttonText: {
         fontFamily: "OpenSans-Regular",
