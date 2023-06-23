@@ -66,7 +66,7 @@ export default function PlantsDirectoryPage({navigation}) {
         const cardStyle = index % 2 === 0 ? styles.evenCard : styles.oddCard
 
         return (
-            <CustomCard key={plant.id} cardStyle={cardStyle} color={color} plant={plant} navigation={navigation}/>
+            <CustomCard key={plant.id} cardStyle={cardStyle} color={color} plant={plant} navigation={navigation} destination={"PlantDetail"}/>
         )
     }
 

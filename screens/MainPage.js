@@ -1,22 +1,23 @@
-import {BackHandler, Image, Pressable, StyleSheet, Text, View} from "react-native";
-import {useCallback, useEffect, useState} from "react";
+import {BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
+import React, {useCallback, useEffect, useState} from "react";
 import {collection, getDocs, limit, orderBy, query} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
 import {useFocusEffect} from "@react-navigation/native";
 import CustomNewsCard from "../components/CustomNewsCard";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
+import ScannedPlantsDropdown from "../components/ScannedPlantsDropdown";
+
 export default function MainPage({navigation}) {
     const [lastNew, setLastNew] = useState(null)
 
-
     useEffect(() => {
-            const q = query(collection(db, "news"), orderBy("date", "desc"), limit(1))
-            getDocs(q).then((doc) => {
-                doc.docs.forEach((news) => {
+        const q = query(collection(db, "news"), orderBy("date", "desc"), limit(1))
+        getDocs(q).then((doc) => {
+            doc.docs.forEach((news) => {
 
-                    setLastNew({id: news.id, ...news.data()})
-                })
+                setLastNew({id: news.id, ...news.data()})
             })
+        })
 
 
     }, []);
@@ -42,26 +43,31 @@ export default function MainPage({navigation}) {
                 <Text style={styles.titleText}>escanea y</Text>
                 <Text style={styles.titleText}>desbloquea!</Text>
             </View>
-            <View style={styles.mainContainer}>
+            <ScrollView alwaysBounceVertical={false} contentContainerStyle={styles.scrollViewContent}>
+                <View style={styles.mainContainer}>
 
-                <View style={styles.newsContainer}>
-                    {lastNew ? (
+                    <View style={styles.newsContainer}>
+                        {lastNew ? (
 
-                        <CustomNewsCard news={lastNew}/>
-                    ) : (
-                        <View>
-                        </View>
-                    )}
+                            <CustomNewsCard news={lastNew}/>
+                        ) : (
+                            <View>
+                            </View>
+                        )}
+                    </View>
+
+                    <ScannedPlantsDropdown navigation={navigation}/>
+
+
+                    <Pressable style={styles.qrIconContainer} onPress={() => {
+                        navigation.navigate("QrScanPage", {origin: "MainLoggedPage"})
+                    }}>
+                        <Image source={require("../assets/images/qr-icon.png")} style={styles.qrImage} resizeMode={"contain"}/>
+                    </Pressable>
+
                 </View>
+            </ScrollView>
 
-
-                <Pressable style={styles.qrIconContainer} onPress={() => {
-                    navigation.navigate("QrScanPage", {origin: "MainLoggedPage"})
-                }}>
-                    <Image source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
-                </Pressable>
-
-            </View>
         </View>
 
     )
@@ -84,18 +90,21 @@ const styles = StyleSheet.create({
         color: "#A8A8A8"
     },
     mainContainer: {
-        height: hp(50),
-        display: "flex",
-        alignItems: "center"
+        justifyContent: "center",
+        flex: 1,
+        alignItems: "center",
+        paddingBottom: hp(15),
+    },
+    scrollViewContent: {
+        flexGrow: 2,
     },
     newsContainer: {
         height: hp(20),
-
     },
     qrIconContainer: {
-        width: wp(20),
-        height: wp(20),
-        borderRadius: wp(10),
+        width: wp(24),
+        height: wp(24),
+        borderRadius: wp(15),
         backgroundColor: "#B6FFB6",
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.5,
@@ -104,5 +113,9 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center"
+    },
+    qrImage: {
+        width: wp(12),
+        height: wp(12)
     }
 })

@@ -19,7 +19,7 @@ export default function CustomNewsCard({news}){
                                   numberOfLines={1}
                                   mode={ResizeTextMode.preset_font_sizes}>{news.title}</AutoSizeText>
                     <AutoSizeText style={styles.newsText}
-                                  fontSizePresets={[12, 16, 20]}
+                                  fontSizePresets={[13, 14, 16]}
                                   numberOfLines={3}
                                   mode={ResizeTextMode.preset_font_sizes}>{news.description}</AutoSizeText>
 
@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        marginBottom: hp(4),
     },
     scrollContainer: {
         padding: wp(2)
@@ -52,12 +51,12 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "#00DAE8",
         width: wp(80),
-        height: wp(80) * 0.30,
+        height: wp(80) * 0.40,
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.5,
         shadowRadius: 4,
         elevation: 2,
-        marginBottom: 5,
+        marginBottom: 4,
     },
     imageContainer: {
         width: wp(20),

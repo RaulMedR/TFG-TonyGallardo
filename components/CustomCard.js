@@ -5,7 +5,7 @@ import {getDownloadURL, ref} from "firebase/storage";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
 
-export default function CustomCard({plant, color, cardStyle, navigation}) {
+export default function CustomCard({plant, color, cardStyle, navigation, destination}) {
     const [photo, setPhoto] = useState('')
 
 
@@ -24,7 +24,7 @@ export default function CustomCard({plant, color, cardStyle, navigation}) {
 
     return (
         <Pressable onPress={() => {
-            navigation.navigate('PlantDetail', {plant: plant, photo: photo})
+            navigation.navigate(destination, {plant: plant, photo: photo})
 
         }}>
             <View style={[styles.container, cardStyle]}>
