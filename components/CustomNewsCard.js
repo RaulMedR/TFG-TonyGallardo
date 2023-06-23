@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        marginBottom: hp(4)
+        marginBottom: hp(4),
     },
     scrollContainer: {
         padding: wp(2)

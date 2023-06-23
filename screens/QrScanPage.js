@@ -44,7 +44,13 @@ export default function QrScanPage({route, navigation}) {
                 setScannedPlants(scannedPlants + 1)
                 const photoUrl = await getDownloadURL(ref(storage, 'plants/' + data + '.jpg'))
                 getDoc(doc(db, "plants", data)).then((doc) => {
-                    navigation.navigate("PlantDetail", {
+                    let destination
+                    if(route.params.origin === "MainPage"){
+                        destination = "PlantDetailPage"
+                    } else {
+                        destination = "PlantDetail"
+                    }
+                    navigation.navigate(destination, {
                         plant: doc.data(),
                         photo: photoUrl,
                         fromQrScanPage: true,

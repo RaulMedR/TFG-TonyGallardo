@@ -30,6 +30,31 @@ function PlantStackNavigator() {
 
 const Stack2 = createNativeStackNavigator();
 
+function ProfileStackNavigator() {
+    return (
+        <Stack2.Navigator screenOptions={() => ({
+            headerShown: false,
+        })}>
+            <Stack2.Screen name="ProfilePage" component={ProfilePage}/>
+            <Stack2.Screen name="EditProfile" component={EditProfilePage}/>
+        </Stack2.Navigator>
+    )
+}
+
+const MainStack = createNativeStackNavigator();
+function MainStackNavigator(){
+    return (
+        <MainStack.Navigator screenOptions={() => ({
+            headerShown: false,
+        })}>
+            <MainStack.Screen name="MainLoggedPage" component={MainPage}/>
+            <MainStack.Screen name="PlantDetailPage" component={PlantPage}/>
+            <MainStack.Screen name="QrScanPage" component={QrScanPage}/>
+
+        </MainStack.Navigator>
+    )
+}
+
 const CustomTabBarButton = ({children, onPress}) => (
     <TouchableOpacity
         style={styles.mapTabStyle}
@@ -43,17 +68,6 @@ const CustomTabBarButton = ({children, onPress}) => (
     </TouchableOpacity>
 
 )
-
-function ProfileStackNavigator() {
-    return (
-        <Stack2.Navigator screenOptions={() => ({
-            headerShown: false,
-        })}>
-            <Stack2.Screen name="ProfilePage" component={ProfilePage}/>
-            <Stack2.Screen name="EditProfile" component={EditProfilePage}/>
-        </Stack2.Navigator>
-    )
-}
 
 export default function BottomTabNavigator() {
     return (
@@ -73,7 +87,7 @@ export default function BottomTabNavigator() {
 
                 }
             })}>
-                <Tab.Screen name="MainPage" component={MainPage} options={{
+                <Tab.Screen name="MainPage" component={MainStackNavigator} options={{
                     tabBarIcon: ({focused}) => (
                         <View style={styles.normalView}>
                             <Image source={require("../assets/images/home-icon.png")} resizeMode={"contain"}
