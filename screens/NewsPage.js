@@ -1,12 +1,13 @@
 import {useEffect, useState} from "react";
 import {collection, getDocs} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
-import {ScrollView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, ScrollView, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import CustomNewsCard from "../components/CustomNewsCard";
 
 export default function NewsPage() {
     const [newsData, setNewsData] = useState([])
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (newsData.length === 0) {
@@ -17,6 +18,7 @@ export default function NewsPage() {
                 });
                 newsData.sort((a, b) => b.id - a.id);
                 setNewsData(newsData);
+                setLoading(false)
             })
         }
 
@@ -29,12 +31,15 @@ export default function NewsPage() {
                 <Text style={styles.titleText}>¡Lee y</Text>
                 <Text style={styles.titleText}>descubre!</Text>
             </View>
-
-            <ScrollView alwaysBounceVertical={false}>
-                {newsData.map((news, index) => (
-                    <CustomNewsCard key={index} news={news}/>
-                ))}
-            </ScrollView>
+            {loading ? (
+                <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
+            ) : (
+                <ScrollView alwaysBounceVertical={false}>
+                    {newsData.map((news, index) => (
+                        <CustomNewsCard key={index} news={news}/>
+                    ))}
+                </ScrollView>
+            )}
         </View>
     )
 

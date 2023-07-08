@@ -1,9 +1,10 @@
-import {BackHandler, Image, ScrollView, StyleSheet, Text, View} from "react-native";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
-import {useEffect} from "react";
+import {ActivityIndicator, BackHandler, Image, ScrollView, StyleSheet, Text, View} from "react-native";
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
+import {useEffect, useState} from "react";
 
 export default function PlantPage({route, navigation}) {
-    const{plant, photo} = route.params
+    const {plant} = route.params
+    const [loadingImage, setLoadingImage] = useState(true);
 
     const handleGoBack = () => {
         if (route.params && route.params.fromQrScanPage) {
@@ -21,20 +22,26 @@ export default function PlantPage({route, navigation}) {
         };
     }, []);
 
-    return(
+    return (
         <ScrollView alwaysBounceVertical={false} style={styles.scrollContainer}>
-        <View style={styles.container}>
+            <View style={styles.container}>
 
-            <Text style={styles.colloquialName}>{plant.colloquialName}</Text>
-            <Text style={[styles.normalText, {marginBottom: hp(2)}]}>{plant.scientificName}</Text>
-            <Image style={styles.plantImage} source={photo ? {uri: photo} : require("../assets/images/logo-app.png")}/>
+                <Text style={styles.colloquialName}>{plant.colloquialName}</Text>
+                <Text style={[styles.normalText, {marginBottom: hp(2)}]}>{plant.scientificName}</Text>
+                <Image style={styles.plantImage}
+                       source={plant.image ? {uri: plant.image} : require("../assets/images/logo-app.png")}
+                       onLoadStart={() => setLoadingImage(true)}
+                       onLoadEnd={() => setLoadingImage(false)}/>
+                {loadingImage && (
+                    <ActivityIndicator size="small" color="#52E23E"
+                                       style={{position: "absolute", top: hp(21), alignSelf: "center"}}/>)}
 
 
-            <Text style={[styles.normalText, {color: "#52E23E"}]}>{plant.type}</Text>
-            <Text style={[styles.normalText, {marginBottom: hp(2)}]}>{plant.origin}</Text>
-            <Text style={[styles.normalText, {textAlign: "justify"}]}>{plant.description}</Text>
+                <Text style={[styles.normalText, {color: "#52E23E"}]}>{plant.type}</Text>
+                <Text style={[styles.normalText, {marginBottom: hp(2)}]}>{plant.origin}</Text>
+                <Text style={[styles.normalText, {textAlign: "justify"}]}>{plant.description}</Text>
 
-        </View>
+            </View>
         </ScrollView>
     )
 }
@@ -51,8 +58,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         alignItems: 'center',
         justifyContent: 'center',
+        marginBottom: hp(10)
     },
-    plantImage:{
+    plantImage: {
         width: wp(60),
         height: wp(60),
         borderRadius: wp(30),
@@ -65,7 +73,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         color: "#00DAE8"
     },
-    normalText:{
+    normalText: {
         display: "flex",
         alignSelf: "center",
         marginLeft: wp(5),

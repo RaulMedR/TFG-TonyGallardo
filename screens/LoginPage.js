@@ -1,4 +1,4 @@
-import {Pressable, StyleSheet, Text, TextInput, View} from "react-native";
+import {ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import {useState} from "react";
 import {auth} from "../utils/firebaseConfig";
 import Toast from "react-native-root-toast";
@@ -10,8 +10,10 @@ export default function LoginPage({navigation}) {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
+        setLoading(true)
         try {
             await signInWithEmailAndPassword(auth, email, password)
             Toast.show('Ha iniciado sesión correctamente', {
@@ -19,9 +21,28 @@ export default function LoginPage({navigation}) {
             })
             navigation.navigate("Main")
         } catch (error) {
-            Toast.show('Ha habido algún error: ' + error.toString(), {
+            let errorMessage = 'Ha habido algún error.'
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    errorMessage = 'El correo electrónico ingresado no es válido.'
+                    break
+                case 'auth/user-disabled':
+                    errorMessage = 'El usuario ha sido desactivado.'
+                    break
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                    errorMessage = 'El correo electrónico o la contraseña son incorrectos.'
+                    break
+                default:
+                    errorMessage += ' ' + error.toString()
+                    break
+            }
+
+            Toast.show(errorMessage, {
                 duration: Toast.durations.LONG
-            })
+            });
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -36,6 +57,10 @@ export default function LoginPage({navigation}) {
                        style={styles.textInput} placeholder={"correo electrónico"}/>
             <TextInput autoCapitalize={"none"} value={password} onChangeText={setPassword} secureTextEntry={true}
                        textContentType={"password"} style={styles.textInput} placeholder={"contraseña"}/>
+            {loading && (
+                <ActivityIndicator size="large" color="#00DAE8"
+                                   style={{alignSelf: "center"}}/>)}
+
             <CustomButton title={"Iniciar sesión"} onPress={handleLogin} color={"#52E23E"}/>
             <Text style={styles.normalText}>¿No tiene cuenta?</Text>
             <Pressable onPress={() => {

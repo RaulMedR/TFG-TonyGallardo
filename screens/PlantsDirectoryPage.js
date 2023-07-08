@@ -1,4 +1,4 @@
-import {Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
@@ -9,15 +9,21 @@ import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
 
 
 export default function PlantsDirectoryPage({navigation}) {
-    const {user, totalPlants, scannedPlants} = useContext(PlantContext)
+    const {user, totalPlants, scannedPlants, setScannedPlants} = useContext(PlantContext)
     const [plants, setPlants] = useState([])
     const [userPlants, setUserPlants] = useState([])
     const [plantReminderHeight, setPlantReminderHeight] = useState(hp(40))
     const [prevUserPlantsValue, setPrevUserPlantsValue] = useState(0)
+    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         let scannedPlantsData = []
         const fetchUserPlants = async () => {
+            if(userPlants.length === 0){
+                setLoading(true)
+
+            }
             const userDoc = await getDoc(doc(db, "users", user.uid));
             scannedPlantsData = await userDoc.data()["scannedPlants"];
             setUserPlants(scannedPlantsData);
@@ -35,7 +41,7 @@ export default function PlantsDirectoryPage({navigation}) {
             });
         }
 
-    }, [user]);
+    }, [scannedPlants]);
 
     useEffect(() => {
         const fetchPlants = async () => {
@@ -46,9 +52,11 @@ export default function PlantsDirectoryPage({navigation}) {
             })
             const resolvedPlants = await Promise.all(promises);
             setPlants(resolvedPlants);
+            setLoading(false)
         }
 
         if (userPlants.length !== prevUserPlantsValue) {
+            setScannedPlants(userPlants.length)
             setPrevUserPlantsValue(userPlants.length)
             fetchPlants().catch((error) => {
                 console.error("Error al obtener los datos del usuario:", error);
@@ -58,20 +66,19 @@ export default function PlantsDirectoryPage({navigation}) {
     }, [userPlants]);
 
 
-
-
-
     const renderPlantCard = (plant, index) => {
         const color = index % 2 === 0 ? "#52E23E" : "#00DAE8"
         const cardStyle = index % 2 === 0 ? styles.evenCard : styles.oddCard
 
         return (
-            <CustomCard key={plant.id} cardStyle={cardStyle} color={color} plant={plant} navigation={navigation} destination={"PlantDetail"}/>
+            <CustomCard key={plant.id} cardStyle={cardStyle} color={color} plant={plant} navigation={navigation}
+                        destination={"PlantDetail"}/>
         )
     }
 
     return (
         <View style={styles.container}>
+
             <View style={styles.cornerContainer}>
                 <View style={styles.cornerCircle}/>
             </View>
@@ -79,7 +86,8 @@ export default function PlantsDirectoryPage({navigation}) {
                 navigation.navigate("QrScan", {origin: "PlantsDirectoryPage"})
 
             }}>
-                <Image style={styles.qrIcon} source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
+                <Image style={styles.qrIcon} source={require("../assets/images/qr-icon.png")}
+                       resizeMode={"contain"}/>
             </Pressable>
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>¡Pasea y</Text>
@@ -87,25 +95,34 @@ export default function PlantsDirectoryPage({navigation}) {
 
             </View>
 
-            <ScrollView style={styles.plantsContainer} alwaysBounceVertical={false}>
-                {plants.map((plant, index) => renderPlantCard(plant, index)
-                )}
-                {
-                    scannedPlants < totalPlants && (
-                        <View style={[styles.plantReminder, {height: plantReminderHeight}]}>
-                            <AutoSizeText style={styles.textReminder} parentWidth={wp(90)}
-                                          numberOfLines={1}
-                                          mode={ResizeTextMode.group}>¡Todavía te quedan plantas por ver!</AutoSizeText>
-                            <Pressable style={styles.qrIconContainerReminder} onPress={() => {
-                                navigation.navigate("QrScan", {origin: "PlantsDirectoryPage"})
-                            }}>
-                                <Image source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
-                            </Pressable>
+            {loading ? (
+                <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
+            ) : (
+                <>
 
-                        </View>
-                    )
-                }
-            </ScrollView>
+                    <ScrollView style={styles.plantsContainer} alwaysBounceVertical={false}>
+                        {plants.map((plant, index) => renderPlantCard(plant, index)
+                        )}
+                        {
+                            scannedPlants < totalPlants && (
+                                <View style={[styles.plantReminder, {height: plantReminderHeight}]}>
+                                    <AutoSizeText style={styles.textReminder} parentWidth={wp(90)}
+                                                  numberOfLines={1}
+                                                  mode={ResizeTextMode.group}>¡Todavía te quedan plantas por
+                                        ver!</AutoSizeText>
+                                    <Pressable style={styles.qrIconContainerReminder} onPress={() => {
+                                        navigation.navigate("QrScan", {origin: "PlantsDirectoryPage"})
+                                    }}>
+                                        <Image source={require("../assets/images/qr-icon.png")} resizeMode={"contain"}/>
+                                    </Pressable>
+
+                                </View>
+                            )
+                        }
+                    </ScrollView>
+
+                </>
+            )}
         </View>
 
     )
@@ -150,6 +167,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        marginBottom: hp(10)
     },
     textReminder: {
         fontFamily: "OpenSans-Bold",
@@ -168,7 +186,7 @@ const styles = StyleSheet.create({
         elevation: 2,
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     evenCard: {
         marginRight: wp(20)

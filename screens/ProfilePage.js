@@ -1,4 +1,4 @@
-import {Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
+import {ActivityIndicator, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import RoundedProfileChart from "../components/RoundedProfileChart";
 import {useContext, useEffect, useState} from "react";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
@@ -12,6 +12,8 @@ export default function ProfilePage({navigation}) {
     const [userName, setUserName] = useState('')
     const [userPhoto, setUserPhoto] = useState('')
     const [suggestion, setSuggestion] = useState('')
+    const [loadingImage, setLoadingImage] = useState(true);
+
     useEffect(() => {
         return navigation.addListener('focus', () => {
             if (user.displayName != null) {
@@ -38,8 +40,12 @@ export default function ProfilePage({navigation}) {
             <View style={styles.profileContainer}>
                 <Image
                     source={userPhoto ? {uri: userPhoto} : require("../assets/images/logo-app.png")}
-                    style={styles.profileImage}
+                    style={styles.profileImage} onLoadStart={() => setLoadingImage(true)}
+                    onLoadEnd={() => setLoadingImage(false)}
                 />
+                {loadingImage && (
+                    <ActivityIndicator size="small" color="#00DAE8"
+                                       style={[styles.profileImage, {position: "absolute", alignSelf: "center"}]}/>)}
 
                 <Text style={styles.nameText}>{userName}</Text>
             </View>
@@ -63,7 +69,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: hp(2),
+        marginBottom: hp(5),
     },
     profileContainer: {
         alignItems: 'center',
@@ -90,7 +96,7 @@ const styles = StyleSheet.create({
         fontStyle: "normal",
         fontFamily: "OpenSans-Regular",
         fontSize: 20,
-        marginBottom: hp(3),
+        marginBottom: hp(2),
 
     },
     buttonText: {

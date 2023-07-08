@@ -7,7 +7,7 @@ import {onAuthStateChanged} from 'firebase/auth'
 import {auth} from "../utils/firebaseConfig";
 import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
-SplashScreen.preventAutoHideAsync().catch((error) =>{
+SplashScreen.preventAutoHideAsync().catch((error) => {
     alert("HomePageError: " + error)
 });
 export default function HomePage({navigation}) {

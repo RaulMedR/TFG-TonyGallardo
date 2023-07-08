@@ -1,37 +1,27 @@
-import {Image, Pressable, StyleSheet, View} from "react-native";
-import {useEffect, useState} from "react";
-import {storage} from "../utils/firebaseConfig";
-import {getDownloadURL, ref} from "firebase/storage";
+import {ActivityIndicator, Image, Pressable, StyleSheet, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
+import {useState} from "react";
 
 export default function CustomCard({plant, color, cardStyle, navigation, destination}) {
-    const [photo, setPhoto] = useState('')
-
-
-    useEffect(() => {
-        if (!photo) {
-            getDownloadURL(ref(storage, 'plants/' + plant.id + '.jpg'))
-                .then((url) => {
-                    setPhoto(url);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        }
-    }, []);
+    const [loadingImage, setLoadingImage] = useState(true);
 
 
     return (
         <Pressable onPress={() => {
-            navigation.navigate(destination, {plant: plant, photo: photo})
+            navigation.navigate(destination, {plant: plant})
 
         }}>
             <View style={[styles.container, cardStyle]}>
                 <View style={[styles.cardContainer, {borderColor: color}]}>
                     <View style={styles.imageContainer}>
-                        <Image source={photo ? {uri: photo} : require("../assets/images/logo-app.png")}
-                               style={styles.plantImage}/>
+
+                        <Image source={plant.image ? {uri: plant.image} : require("../assets/images/logo-app.png")}
+                               style={styles.plantImage} onLoadStart={() => setLoadingImage(true)}
+                               onLoadEnd={() => setLoadingImage(false)}/>
+                        {loadingImage && (
+                            <ActivityIndicator size="small" color="#00DAE8"
+                                               style={{position: "absolute", alignSelf: "center"}}/>)}
                     </View>
 
                     <View style={styles.textContainer}>

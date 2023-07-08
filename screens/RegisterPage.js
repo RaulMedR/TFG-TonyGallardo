@@ -1,4 +1,4 @@
-import {Pressable, StyleSheet, Text, TextInput, View} from "react-native";
+import {ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import CustomButton from "../components/CustomButton";
 import {useState} from "react";
 import Toast from "react-native-root-toast";
@@ -11,6 +11,7 @@ export default function RegisterPage({navigation}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [repeatPassword, setRepeatPassword] = useState('')
+    const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
         if (password !== repeatPassword) {
@@ -18,6 +19,7 @@ export default function RegisterPage({navigation}) {
                 duration: Toast.durations.LONG
             })
         } else {
+            setLoading(true)
             try {
                 let user = await createUserWithEmailAndPassword(auth, email, password)
                 Toast.show('Se ha registrado correctamente', {
@@ -31,9 +33,28 @@ export default function RegisterPage({navigation}) {
 
 
             } catch (error) {
-                Toast.show('Ha habido algún error: ' + error.toString(), {
+                let errorMessage = 'Ha habido algún error.'
+
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'El correo electrónico ingresado ya está en uso.'
+                        break
+                    case 'auth/invalid-email':
+                        errorMessage = 'El correo electrónico ingresado no es válido.'
+                        break
+                    case 'auth/weak-password':
+                        errorMessage = 'La contraseña es débil. Debe tener al menos 6 caracteres.'
+                        break
+
+                    default:
+                        errorMessage += ' ' + error.toString()
+                        break
+                }
+                Toast.show(errorMessage, {
                     duration: Toast.durations.LONG
                 })
+            } finally {
+                setLoading(false)
             }
         }
 
@@ -54,6 +75,9 @@ export default function RegisterPage({navigation}) {
             <TextInput value={repeatPassword} onChangeText={setRepeatPassword} autoCapitalize={"none"}
                        secureTextEntry={true} textContentType={"password"}
                        style={styles.textInput} placeholder={"repite contraseña"}/>
+            {loading && (
+                <ActivityIndicator size="large" color="#00DAE8"
+                                   style={{alignSelf: "center"}}/>)}
             <CustomButton title={"Registrarse"} onPress={handleRegister} color={"#00DAE8"}/>
             <Text style={styles.normalText}>¿Ya tiene cuenta?</Text>
             <Pressable onPress={() => {

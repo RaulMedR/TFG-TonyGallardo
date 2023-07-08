@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Image, Pressable, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import PlantContext from "./PlantContext";
 import {auth, db} from "../utils/firebaseConfig";
@@ -10,6 +10,7 @@ export default function ScannedPlantsDropdown({navigation}) {
     const {scannedPlants, totalPlants} = useContext(PlantContext);
     const [scannedPlantsData, setScannedPlantsData] = useState([]);
     const [dropdownActivated, setDropdownActivated] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getDoc(doc(db, "users", auth.currentUser.uid)).then(async (userDoc) => {
@@ -22,15 +23,20 @@ export default function ScannedPlantsDropdown({navigation}) {
                 })
             );
             setScannedPlantsData(plantsData);
+            setLoading(false)
         });
-    }, []);
+    }, [scannedPlants]);
 
     const toggleDropdown = () => {
         setDropdownActivated(!dropdownActivated);
     };
 
     return (
-        <View style={[styles.wrapperContainer, dropdownActivated && {height: hp(57)}]}>
+        <View style={[styles.wrapperContainer, dropdownActivated && {height: hp(61)}]}>
+            {loading ? (
+                <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
+            ) : (
+
             <View style={styles.scannedContainer}>
                 <View style={styles.scannedHeaderContainer}>
                     <Text style={styles.scannedTitle}>Plantas</Text>
@@ -41,7 +47,7 @@ export default function ScannedPlantsDropdown({navigation}) {
                     </View>
                 </View>
 
-                <Pressable onPress={toggleDropdown} style={styles.dropdownButton}>
+                <Pressable onPress={toggleDropdown}>
                     <Image
                         source={require("../assets/images/arrow-icon.png")}
                         style={[styles.arrowImage, dropdownActivated && styles.imageFlipped]}
@@ -57,6 +63,7 @@ export default function ScannedPlantsDropdown({navigation}) {
                     </View>
                 )}
             </View>
+                )}
         </View>
     );
 }
@@ -102,7 +109,6 @@ const styles = StyleSheet.create({
         fontFamily: "OpenSans-Regular",
         color: "#52E23E",
     },
-    dropdownButton: {},
     arrowImage: {
         height: hp(3),
     },
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
     },
     dropdownContent: {
         position: "absolute",
-        top: hp(12),
+        top: hp(15),
         width: wp(70),
         backgroundColor: "white",
         alignItems: "center",

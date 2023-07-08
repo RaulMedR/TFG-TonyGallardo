@@ -4,9 +4,9 @@ import {BarCodeScanner} from "expo-barcode-scanner";
 import {Ionicons} from '@expo/vector-icons'
 import {useContext, useEffect, useState} from "react";
 import {arrayUnion, doc, getDoc, updateDoc} from "firebase/firestore";
-import {db, storage} from "../utils/firebaseConfig";
-import {getDownloadURL, ref} from "firebase/storage";
+import {db} from "../utils/firebaseConfig";
 import PlantContext from "../components/PlantContext";
+import Toast from "react-native-root-toast";
 
 const scannerAspectRatio = hp(100) / wp(100);
 
@@ -41,21 +41,36 @@ export default function QrScanPage({route, navigation}) {
                 await updateDoc(doc(db, "users", user.uid), {
                     scannedPlants: arrayUnion(data)
                 })
-                setScannedPlants(scannedPlants + 1)
-                const photoUrl = await getDownloadURL(ref(storage, 'plants/' + data + '.jpg'))
                 getDoc(doc(db, "plants", data)).then((doc) => {
                     let destination
-                    if(route.params.origin === "MainPage"){
+                    if (route.params.origin === "MainPage") {
                         destination = "PlantDetailPage"
                     } else {
                         destination = "PlantDetail"
                     }
-                    navigation.navigate(destination, {
-                        plant: doc.data(),
-                        photo: photoUrl,
-                        fromQrScanPage: true,
-                        origin: route.params.origin
+                    setScannedPlants(scannedPlants + 1)
+                    if (doc.exists()) {
+                        navigation.navigate(destination, {
+                            plant: doc.data(),
+                            fromQrScanPage: true,
+                            origin: route.params.origin
+                        })
+
+                    } else {
+                        Toast.show('No se ha encontrado la planta. Inténtalo de nuevo.', {
+                            duration: Toast.durations.LONG
+                        })
+                        navigation.navigate(route.params.origin)
+
+                    }
+
+                }).catch(() => {
+                    Toast.show('Ha habido un error al encontrar la planta. Inténtalo de nuevo.', {
+                        duration: Toast.durations.LONG
                     })
+                    navigation.navigate(route.params.origin)
+
+
                 })
             }
         }
