@@ -18,7 +18,11 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Permite el acceso a la cámara para escanear QRs",
-        "NSLocationWhenInUseUsageDescription": "Permite el acceso a la ubicación para mostrarla en el mapa"
+        "NSLocationWhenInUseUsageDescription": "Permite el acceso a la ubicación para mostrarla en el mapa",
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
       }
 
     },
@@ -29,11 +33,15 @@
       },
       "permissions": [
         "CAMERA",
-        "ACCESS_FINE_LOCATION"
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
       ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": {
+
     }
   }
 }
