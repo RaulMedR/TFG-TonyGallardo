@@ -63,6 +63,8 @@ export default function MapPage({navigation}) {
                     })
 
 
+
+
                     void saveDataLocally({lat, long, date})
                     let distance = calculateDistance(parkCenter.latitude, parkCenter.longitude, lat, long)
 
@@ -76,6 +78,10 @@ export default function MapPage({navigation}) {
 
                 }
             })
+
+            if(!TaskManager.isTaskDefined(LOCATION_TRACKING)){
+                return void config()
+            }
 
             let res_foreground = await Permissions.askAsync(Permissions.LOCATION_FOREGROUND)
             let res_background = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND)
