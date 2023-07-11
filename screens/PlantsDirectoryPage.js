@@ -36,9 +36,7 @@ export default function PlantsDirectoryPage({navigation}) {
         }
 
         if (user) {
-            fetchUserPlants().catch((error) => {
-                console.error("Error al obtener los datos del usuario:", error);
-            });
+            void fetchUserPlants()
         }
 
     }, [scannedPlants]);
@@ -58,9 +56,7 @@ export default function PlantsDirectoryPage({navigation}) {
         if (userPlants.length !== prevUserPlantsValue) {
             setScannedPlants(userPlants.length)
             setPrevUserPlantsValue(userPlants.length)
-            fetchPlants().catch((error) => {
-                console.error("Error al obtener los datos del usuario:", error);
-            });
+            void fetchPlants()
         }
 
     }, [userPlants]);

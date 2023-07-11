@@ -1,4 +1,4 @@
-import {Image, Pressable, ScrollView, StyleSheet, TextInput, View} from "react-native";
+import {ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, TextInput, View} from "react-native";
 import {useContext, useState} from "react";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import * as ImagePicker from 'expo-image-picker';
@@ -12,8 +12,9 @@ import {updateProfile} from 'firebase/auth'
 
 export default function EditProfilePage({navigation}) {
     const {user, setUser} = useContext(PlantContext)
-    const [name, setName] = useState('');
-    const [profilePic, setProfilePic] = useState('');
+    const [name, setName] = useState('')
+    const [profilePic, setProfilePic] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -29,13 +30,12 @@ export default function EditProfilePage({navigation}) {
     }
 
     const handleSaveEditProfile = async () => {
-
-
+        setLoading(true)
         if (profilePic && name) {
             const response = await fetch(profilePic)
             const blob = await response.blob()
             const storageRef = ref(storage, 'users/' + user.uid + '.jpg')
-            uploadBytes(storageRef, blob).catch((error) => {
+            await uploadBytes(storageRef, blob).catch((error) => {
                 alert("Ha habido un error en la subida: " + error.toString())
             })
             await getDownloadURL(storageRef).then(async (downloadURL) => {
@@ -59,7 +59,7 @@ export default function EditProfilePage({navigation}) {
             const response = await fetch(profilePic)
             const blob = await response.blob()
             const storageRef = ref(storage, 'users/' + user.uid + '.jpg')
-            uploadBytes(storageRef, blob).catch((error) => {
+            await uploadBytes(storageRef, blob).catch((error) => {
                 alert("Ha habido un error en la subida: " + error.toString())
             })
             await getDownloadURL(storageRef).then(async (downloadURL) => {
@@ -71,7 +71,7 @@ export default function EditProfilePage({navigation}) {
 
             })
         }
-
+        setLoading(false)
         navigation.navigate("ProfilePage")
 
 
@@ -96,8 +96,12 @@ export default function EditProfilePage({navigation}) {
                     onChangeText={setName}
                 />
 
-                <CustomButton color={"#00DAE8"} title="Guardar" onPress={handleSaveEditProfile}/>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#00DAE8"
+                                       style={{alignSelf: "center"}}/>) : (
+                    <CustomButton color={"#00DAE8"} title="Guardar" onPress={handleSaveEditProfile}/>
 
+                )}
             </View>
         </ScrollView>
     )

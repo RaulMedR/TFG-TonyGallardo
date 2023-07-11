@@ -28,16 +28,16 @@ function PlantStackNavigator() {
     );
 }
 
-const Stack2 = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
 
 function ProfileStackNavigator() {
     return (
-        <Stack2.Navigator screenOptions={() => ({
+        <ProfileStack.Navigator screenOptions={() => ({
             headerShown: false,
         })}>
-            <Stack2.Screen name="ProfilePage" component={ProfilePage}/>
-            <Stack2.Screen name="EditProfile" component={EditProfilePage}/>
-        </Stack2.Navigator>
+            <ProfileStack.Screen name="ProfilePage" component={ProfilePage}/>
+            <ProfileStack.Screen name="EditProfile" component={EditProfilePage}/>
+        </ProfileStack.Navigator>
     )
 }
 
@@ -52,6 +52,19 @@ function MainStackNavigator(){
             <MainStack.Screen name="QrScanPage" component={QrScanPage}/>
 
         </MainStack.Navigator>
+    )
+}
+const MapStack = createNativeStackNavigator()
+
+function MapStackNavigator() {
+    return (
+        <MapStack.Navigator screenOptions={() => ({
+            headerShown: false,
+        })}>
+            <MapStack.Screen name="MapPage" component={MapPage}/>
+            <MapStack.Screen name="QrScanFromMap" component={QrScanPage}/>
+
+        </MapStack.Navigator>
     )
 }
 
@@ -111,7 +124,7 @@ export default function BottomTabNavigator() {
                     )
                 }
                 }/>
-                <Tab.Screen name="Map" component={MapPage} options={{
+                <Tab.Screen name="Map" component={MapStackNavigator} options={{
                     tabBarIcon: ({focused}) => (
                         <Image source={require("../assets/images/map-icon.png")} resizeMode={"contain"}
                                style={[styles.mapTabImage, {
