@@ -1,11 +1,17 @@
-import {Text, View} from "react-native";
+import {ActivityIndicator, Image, StyleSheet, View} from "react-native";
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
-import {useEffect} from "react";
+import * as Permissions from 'expo-permissions'
+import {useContext, useEffect, useState} from "react";
 
 import {child, push, ref, update} from 'firebase/database'
-import {auth, realTimeDatabase} from "../utils/firebaseConfig";
+import {auth, db, realTimeDatabase} from "../utils/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage/";
+import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import {doc, getDoc} from "firebase/firestore";
+import plantLocationData from '../assets/plants_location.json'
+import PlantContext from "../components/PlantContext";
+import {heightPercentageToDP} from "react-native-responsive-screen";
 
 
 const LOCATION_TRACKING = 'location-tracking'
@@ -58,6 +64,8 @@ const zones = [
 let currentZoneIndex = 0
 
 let timer = null
+
+let currentPosition = parkCenter
 
 
 const startTimer = () => {
@@ -169,14 +177,13 @@ const handleUploadRealTimeDatabase = async () => {
 }
 
 export default function MapPage() {
-
+    const {user, scannedPlants} = useContext(PlantContext)
+    const [userPlants, setUserPlants] = useState([])
 
     useEffect(() => {
         const config = async () => {
-            //let res_foreground = await Permissions.askAsync(Permissions.LOCATION_FOREGROUND)
-            //let res_background = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND)
-            let res_foreground = await Location.getForegroundPermissionsAsync()
-            let res_background = await Location.getBackgroundPermissionsAsync()
+            let res_foreground = await Permissions.askAsync(Permissions.LOCATION_FOREGROUND)
+            let res_background = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND)
             if (res_foreground.granted) {
                 console.log("Se ha dado el permiso foreground")
             } else {
@@ -198,20 +205,94 @@ export default function MapPage() {
                 console.log(res_foreground.canAskAgain)
             }
         }
+        let scannedPlantsData = []
+
+        const fetchUserPlants = async () => {
+            console.log("que loco")
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            scannedPlantsData = await userDoc.data()["scannedPlants"];
+            setUserPlants(scannedPlantsData);
+        }
         config().catch((error) => {
             console.log('ConfigLocationTrackingError:', error)
         })
-
+        fetchUserPlants().catch((error) => {
+            console.log('FetchingUserPlantsError:', error)
+        })
 
     }, [])
+
+    if (userPlants.length === 0 && scannedPlants > 0) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
+            </View>
+        )
+    }
+
     return (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text>Map Page Works</Text>
+        <View style={styles.container}>
+            <MapView
+                style={styles.mapContainer}
+                initialRegion={{
+                    latitude: parkCenter.latitude,
+                    longitude: parkCenter.longitude,
+                    latitudeDelta: 0.008,
+                    longitudeDelta: 0.004
+                }}
+                provider={PROVIDER_GOOGLE}
+            >
+                <Marker coordinate={
+                    currentPosition
+                }>
+                    <Image source={require("../assets/images/map/person-walking.gif")}
+                           resizeMode="contain"
+                           style={{height: heightPercentageToDP(5), width: heightPercentageToDP(5)}}/>
+                </Marker>
+
+                {Object.keys(plantLocationData).map((plant, index) => (
+
+                    <Marker
+                        key={index}
+                        coordinate={
+                            {
+                                latitude: plantLocationData[plant].latitude,
+                                longitude: plantLocationData[plant].longitude
+                            }
+                        }>
+                        <Image
+                            source={userPlants.includes(plant) ? require("../assets/images/map/plant-icon-visited.png") :
+                                require("../assets/images/map/plant-icon-no-visited.png")}
+                            resizeMode="center"
+                            resizeMethod="resize"
+                            style={{height: heightPercentageToDP(3), width: heightPercentageToDP(3)}}
+
+                        />
+
+                    </Marker>
+
+                ))}
+
+            </MapView>
         </View>
 
     )
 }
 
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#FFFFFF",
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    mapContainer: {
+        width: '100%',
+        height: '100%',
+    }
+
+})
 
 TaskManager.defineTask(LOCATION_TRACKING, async ({data, error}) => {
     if (error) {
@@ -236,6 +317,11 @@ TaskManager.defineTask(LOCATION_TRACKING, async ({data, error}) => {
             } catch (error) {
                 console.error("Error al guardar los datos localmente:", error)
             }
+        }
+
+        currentPosition = {
+            latitude: lat,
+            longitude: long
         }
 
 

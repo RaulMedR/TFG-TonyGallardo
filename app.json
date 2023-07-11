@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "TonyGallardo",
+    "description": "Aplicación guía para visitantes del parque Tony Gallardo",
     "slug": "TonyGallardo",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,6 +16,9 @@
       "**/*"
     ],
     "ios": {
+      "config": {
+        "googleMapsApiKey": "AIzaSyCzVYBATZuD2BkKpB36HrZ8EGM-NWbqFy4"
+      },
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Permite el acceso a la cámara para escanear QRs",
@@ -24,9 +28,13 @@
           "fetch"
         ]
       }
-
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCzVYBATZuD2BkKpB36HrZ8EGM-NWbqFy4"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -35,13 +43,16 @@
         "CAMERA",
         "ACCESS_FINE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION"
-      ]
+      ],
+      "package": "com.raulapk.TonyGallardo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": {
-
+    "extra": {
+      "eas": {
+        "projectId": "e58b2c4d-94c2-4d44-a7e3-edced6818895"
+      }
     }
   }
 }
