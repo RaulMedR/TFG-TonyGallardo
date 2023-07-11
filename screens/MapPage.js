@@ -51,7 +51,6 @@ export default function MapPage({navigation}) {
                             existingData = existingData.concat(data)
                             const jsonData = JSON.stringify(existingData)
                             await AsyncStorage.setItem('geolocationData', jsonData)
-                            alert("Datos guardados localmente")
 
                         } catch (error) {
                             alert("Error al guardar los datos localmente: " + error.message)
