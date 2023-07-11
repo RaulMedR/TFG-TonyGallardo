@@ -152,10 +152,11 @@ export const handleUploadRealTimeDatabase = async () => {
             const data = JSON.parse(jsonData)
             const newGPSKey = push(child(ref(realTimeDatabase), '/user-GPS-data/' + auth.currentUser.uid)).key
             updates['/user-GPS-data/' + auth.currentUser.uid + '/' + newGPSKey] = data
-            await update(ref(realTimeDatabase), updates)
-            alert("Datos sincronizacos con Firebase")
-            await AsyncStorage.removeItem('geolocationData')
-            alert("Datos locales eliminados")
+            update(ref(realTimeDatabase), updates).then(() => {
+                alert("Datos sincronizacos con Firebase")
+                AsyncStorage.removeItem('geolocationData')
+                alert("Datos locales eliminados")
+            })
         }
     } catch (error) {
         alert("Error al sincronizar los datos con Firebase:" + error)
