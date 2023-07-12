@@ -5,7 +5,7 @@
     "slug": "TonyGallardo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo-app.png",
+    "icon": "./assets/images/logo-app.jpg",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/logo-letters.png",
