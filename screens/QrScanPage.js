@@ -43,26 +43,12 @@ export default function QrScanPage({route, navigation}) {
                 scanned = true
             }
             if (data && scanned) {
-                getDoc(doc(db, "plants", data)).then((doc) => {
-                    let destination
-                    if (route.params.origin === "MainLoggedPage") {
-                        destination = "PlantDetailPage"
-                    } else if (route.params.origin === "PlantsDirectoryPage") {
-                        destination = "PlantDetail"
-                    } else {
-                        destination = "PlantDetailFromMap"
-                    }
+                let docExists = false
+                let plant = null
+                await getDoc(doc(db, "plants", data)).then((doc) => {
                     if (doc.exists()) {
-                        updateDoc(doc(db, "users", user.uid), {
-                            scannedPlants: arrayUnion(data)
-                        })
-                        setScannedPlants(scannedPlants + 1)
-                        setLoading(false)
-                        navigation.navigate(destination, {
-                            plant: doc.data(),
-                            fromQrScanPage: true,
-                            origin: route.params.origin
-                        })
+                        docExists = true
+                        plant = doc
 
                     } else {
                         Toast.show('No se ha encontrado la planta. Inténtalo de nuevo.', {
@@ -73,6 +59,8 @@ export default function QrScanPage({route, navigation}) {
 
                     }
 
+
+
                 }).catch(() => {
                     Toast.show('Ha habido un error al encontrar la planta. Inténtalo de nuevo.', {
                         duration: Toast.durations.LONG
@@ -82,6 +70,26 @@ export default function QrScanPage({route, navigation}) {
 
 
                 })
+                if(docExists) {
+                    void updateDoc(doc(db, "users", user.uid), {
+                        scannedPlants: arrayUnion(data)
+                    })
+                    let destination
+                    if (route.params.origin === "MainLoggedPage") {
+                        destination = "PlantDetailPage"
+                    } else if (route.params.origin === "PlantsDirectoryPage") {
+                        destination = "PlantDetail"
+                    } else {
+                        destination = "PlantDetailFromMap"
+                    }
+                    setScannedPlants(scannedPlants + 1)
+                    setLoading(false)
+                    navigation.navigate(destination, {
+                        plant: plant.data(),
+                        fromQrScanPage: true,
+                        origin: route.params.origin
+                    })
+                }
             }
         }
     }
