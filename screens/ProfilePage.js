@@ -104,7 +104,8 @@ const styles = StyleSheet.create({
         fontStyle: "normal",
         marginTop: hp(1),
         fontSize: 20,
-        color: "#52E23E"
+        color: "#52E23E",
+        marginBottom: hp(5)
     },
     nameText: {
         fontFamily: "Roboto-Regular",

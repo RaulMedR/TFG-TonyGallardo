@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
     },
     titleContainer: {
-        paddingTop: hp(5),
         paddingLeft: wp(3),
         paddingBottom: hp(2),
 

@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     },
     titleContainer: {
         position: "absolute",
-        top: hp(5),
+        top: hp(0),
         width: wp(65),
         left: wp(3),
     },

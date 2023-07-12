@@ -43,9 +43,6 @@ export default function QrScanPage({route, navigation}) {
                 scanned = true
             }
             if (data && scanned) {
-                await updateDoc(doc(db, "users", user.uid), {
-                    scannedPlants: arrayUnion(data)
-                })
                 getDoc(doc(db, "plants", data)).then((doc) => {
                     let destination
                     if (route.params.origin === "MainLoggedPage") {
@@ -56,6 +53,9 @@ export default function QrScanPage({route, navigation}) {
                         destination = "PlantDetailFromMap"
                     }
                     if (doc.exists()) {
+                        updateDoc(doc(db, "users", user.uid), {
+                            scannedPlants: arrayUnion(data)
+                        })
                         setScannedPlants(scannedPlants + 1)
                         setLoading(false)
                         navigation.navigate(destination, {
@@ -84,7 +84,7 @@ export default function QrScanPage({route, navigation}) {
                 })
             }
         }
-    };
+    }
 
     if (loading) {
         return (
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
     },
     titleContainer: {
-        paddingTop: hp(5),
         paddingLeft: wp(3),
         paddingBottom: hp(2),
 
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginHorizontal: hp(3),
         overflow: "hidden",
-        marginBottom: hp(3),
+        marginBottom: hp(5),
 
     },
     cameraWrapper: {

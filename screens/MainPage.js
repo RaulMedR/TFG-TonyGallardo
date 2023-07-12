@@ -1,4 +1,4 @@
-import {BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
 import React, {useCallback, useEffect, useState} from "react";
 import {collection, getDocs, limit, orderBy, query} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
@@ -52,6 +52,7 @@ export default function MainPage({navigation}) {
                             <CustomNewsCard news={lastNew}/>
                         ) : (
                             <View>
+                                <ActivityIndicator size="large" color="#00DAE8" style={{alignSelf: "center"}}/>
                             </View>
                         )}
                     </View>
@@ -62,7 +63,8 @@ export default function MainPage({navigation}) {
                     <Pressable style={styles.qrIconContainer} onPress={() => {
                         navigation.navigate("QrScanPage", {origin: "MainLoggedPage"})
                     }}>
-                        <Image source={require("../assets/images/qr-icon.png")} style={styles.qrImage} resizeMode={"contain"}/>
+                        <Image source={require("../assets/images/qr-icon.png")} style={styles.qrImage}
+                               resizeMode={"contain"}/>
                     </Pressable>
 
                 </View>
@@ -80,7 +82,6 @@ const styles = StyleSheet.create({
     },
 
     titleContainer: {
-        paddingTop: hp(5),
         paddingLeft: wp(3),
         paddingBottom: hp(2),
     },

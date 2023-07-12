@@ -2,17 +2,13 @@ import {ActivityIndicator, Image, Pressable, StyleSheet, Text, View} from "react
 import * as TaskManager from 'expo-task-manager'
 import * as Permissions from 'expo-permissions'
 import {useContext, useEffect, useState} from "react";
-import {db} from "../utils/firebaseConfig";
+import {db, storage} from "../utils/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage/";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import {doc, getDoc} from "firebase/firestore";
 import plantLocationData from '../assets/plants_location.json'
 import PlantContext from "../components/PlantContext";
-import {
-    heightPercentageToDP as hp,
-    heightPercentageToDP,
-    widthPercentageToDP as wp
-} from "react-native-responsive-screen";
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {
     asyncStorageTimer,
     calculateDistance,
@@ -26,11 +22,14 @@ import {
     startLocationTracking,
     zones
 } from "../utils/LocationUtils";
+import {getDownloadURL, ref} from "firebase/storage";
 
 export default function MapPage({navigation}) {
     const [currentPosition, setCurrentPosition] = useState(parkCenter);
     const {user, scannedPlants} = useContext(PlantContext)
     const [userPlants, setUserPlants] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [plantLocationDataLast, setPlantLocationDataLast] = useState({})
     TaskManager.defineTask(LOCATION_TRACKING, async ({data, error}) => {
         if (error) {
             alert("Ha habido un error al obtener su geolocalizacion: " + error.message)
@@ -111,8 +110,27 @@ export default function MapPage({navigation}) {
 
     }, [scannedPlants])
 
+    useEffect(() => {
+        setLoading(true)
+        getDownloadURL(ref(storage, 'plants/plants_location.json')).then(async (url) => {
+            const response = await fetch(url)
+            const blob = await response.blob()
+            const reader = new FileReader()
+            reader.onload = () => {
+                const jsonObject = eval('(' + reader.result + ')')
+                setPlantLocationDataLast(jsonObject)
+            };
+            reader.readAsText(blob);
+        }).catch(() => {
+            setPlantLocationDataLast(plantLocationData)
+        })
 
-    if (userPlants.length === 0 && scannedPlants > 0) {
+        setLoading(false)
+
+    }, [])
+
+
+    if (userPlants.length === 0 && scannedPlants > 0 || loading) {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
@@ -137,48 +155,50 @@ export default function MapPage({navigation}) {
                 <Text style={styles.title}>escanea!</Text>
 
             </View>
-            <MapView
-                style={styles.mapContainer}
-                initialRegion={{
-                    latitude: parkCenter.latitude,
-                    longitude: parkCenter.longitude,
-                    latitudeDelta: 0.008,
-                    longitudeDelta: 0.004
-                }}
-                provider={PROVIDER_GOOGLE}
-            >
-                <Marker coordinate={
-                    currentPosition
-                }>
-                    <Image source={require("../assets/images/map/person-walking.gif")}
-                           resizeMode="contain"
-                           style={{height: heightPercentageToDP(5), width: heightPercentageToDP(5)}}/>
-                </Marker>
-
-                {Object.keys(plantLocationData).map((plant, index) => (
-
-                    <Marker
-                        key={index}
-                        coordinate={
-                            {
-                                latitude: plantLocationData[plant].latitude,
-                                longitude: plantLocationData[plant].longitude
-                            }
-                        }>
-                        <Image
-                            source={userPlants.includes(plant) ? require("../assets/images/map/plant-icon-visited.png") :
-                                require("../assets/images/map/plant-icon-no-visited.png")}
-                            resizeMode="center"
-                            resizeMethod="resize"
-                            style={{height: heightPercentageToDP(3), width: heightPercentageToDP(3)}}
-
-                        />
-
+            <View style={styles.mapWrapper}>
+                <MapView
+                    style={styles.mapContainer}
+                    initialRegion={{
+                        latitude: parkCenter.latitude,
+                        longitude: parkCenter.longitude,
+                        latitudeDelta: 0.008,
+                        longitudeDelta: 0.004
+                    }}
+                    provider={PROVIDER_GOOGLE}
+                >
+                    <Marker coordinate={
+                        currentPosition
+                    }>
+                        <Image source={require("../assets/images/map/person-walking.gif")}
+                               resizeMode="contain"
+                               style={{height: hp(5), width: hp(5)}}/>
                     </Marker>
 
-                ))}
+                    {Object.keys(plantLocationDataLast).map((plant, index) => (
 
-            </MapView>
+                        <Marker
+                            key={index}
+                            coordinate={
+                                {
+                                    latitude: plantLocationDataLast[plant].latitude,
+                                    longitude: plantLocationDataLast[plant].longitude
+                                }
+                            }>
+                            <Image
+                                source={userPlants.includes(plant) ? require("../assets/images/map/plant-icon-visited.png") :
+                                    require("../assets/images/map/plant-icon-no-visited.png")}
+                                resizeMode="center"
+                                resizeMethod="resize"
+                                style={{height: hp(3), width: hp(3)}}
+
+                            />
+
+                        </Marker>
+
+                    ))}
+
+                </MapView>
+            </View>
         </View>
 
     )
@@ -192,17 +212,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    mapContainer: {
-        width: wp(95),
-        height: heightPercentageToDP(65),
-        borderRadius: wp(5),
+    mapWrapper: {
+        borderRadius: wp(15),
+        overflow: "hidden",
         top: hp(5),
         borderColor: "#00DAE8",
         borderWidth: 1,
+        width: wp(95),
+        height: hp(65),
+
+    },
+    mapContainer: {
+        width: wp(95),
+        height: hp(65),
     },
     titleContainer: {
         position: "absolute",
-        top: hp(5),
+        top: hp(0),
         width: wp(65),
         left: wp(3),
     },
