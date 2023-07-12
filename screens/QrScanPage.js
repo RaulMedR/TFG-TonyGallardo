@@ -37,6 +37,7 @@ export default function QrScanPage({route, navigation}) {
         let scanned = false
         if (scanningEnabled) {
             if (typeof type === "number") {
+                setLoading(true)
                 setScannedData(data);
                 setScanningEnabled(false)
                 scanned = true
@@ -47,13 +48,16 @@ export default function QrScanPage({route, navigation}) {
                 })
                 getDoc(doc(db, "plants", data)).then((doc) => {
                     let destination
-                    if (route.params.origin === "MainPage") {
+                    if (route.params.origin === "MainLoggedPage") {
                         destination = "PlantDetailPage"
-                    } else {
+                    } else if (route.params.origin === "PlantsDirectoryPage") {
                         destination = "PlantDetail"
+                    } else {
+                        destination = "PlantDetailFromMap"
                     }
-                    setScannedPlants(scannedPlants + 1)
                     if (doc.exists()) {
+                        setScannedPlants(scannedPlants + 1)
+                        setLoading(false)
                         navigation.navigate(destination, {
                             plant: doc.data(),
                             fromQrScanPage: true,
@@ -64,6 +68,7 @@ export default function QrScanPage({route, navigation}) {
                         Toast.show('No se ha encontrado la planta. Inténtalo de nuevo.', {
                             duration: Toast.durations.LONG
                         })
+                        setLoading(false)
                         navigation.navigate(route.params.origin)
 
                     }
@@ -72,6 +77,7 @@ export default function QrScanPage({route, navigation}) {
                     Toast.show('Ha habido un error al encontrar la planta. Inténtalo de nuevo.', {
                         duration: Toast.durations.LONG
                     })
+                    setLoading(false)
                     navigation.navigate(route.params.origin)
 
 
@@ -79,6 +85,14 @@ export default function QrScanPage({route, navigation}) {
             }
         }
     };
+
+    if (loading) {
+        return (
+            <View style={styles.cameraContainer}>
+                <ActivityIndicator size="large" color="#00DAE8"/>
+            </View>
+        )
+    }
 
     return (
         <View style={styles.container}>
@@ -88,14 +102,11 @@ export default function QrScanPage({route, navigation}) {
             </View>
             <View style={styles.cameraContainer}>
                 <View style={styles.cameraWrapper}>
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
-                    ) : (
                     <BarCodeScanner style={StyleSheet.absoluteFillObject}
                                     ratio={scannerAspectRatio}
                                     onBarCodeScanned={handleBarCodeScanned}
                                     barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-                    />)}
+                    />
                 </View>
                 <View style={styles.overlay}>
                     <View style={styles.scanSquare}/>

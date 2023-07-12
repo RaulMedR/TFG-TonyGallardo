@@ -11,8 +11,10 @@ export default function ScannedPlantsDropdown({navigation}) {
     const [scannedPlantsData, setScannedPlantsData] = useState([]);
     const [dropdownActivated, setDropdownActivated] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [dropdownHeight, setDropdownHeight] = useState(0)
 
     useEffect(() => {
+        setDropdownHeight(Math.min(62, scannedPlants * 20 + 10))
         getDoc(doc(db, "users", auth.currentUser.uid)).then(async (userDoc) => {
             const userData = userDoc.data();
             const lastThreePlants = userData.scannedPlants.slice(-3);
@@ -28,11 +30,11 @@ export default function ScannedPlantsDropdown({navigation}) {
     }, [scannedPlants]);
 
     const toggleDropdown = () => {
-        setDropdownActivated(!dropdownActivated);
+        setDropdownActivated(!dropdownActivated)
     };
 
     return (
-        <View style={[styles.wrapperContainer, dropdownActivated && {height: hp(61)}]}>
+        <View style={[styles.wrapperContainer,(scannedPlants > 0) && dropdownActivated && {height: hp(dropdownHeight)}]}>
             {loading ? (
                 <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
             ) : (

@@ -19,6 +19,7 @@ import {
     currentZoneIndex,
     handleNextZoneActivation,
     handlePrevZoneActivation,
+    handleUploadRealTimeDatabase,
     LOCATION_TRACKING,
     parkCenter,
     startAsyncStorageTimer,
@@ -32,7 +33,7 @@ export default function MapPage({navigation}) {
     const [userPlants, setUserPlants] = useState([])
     TaskManager.defineTask(LOCATION_TRACKING, async ({data, error}) => {
         if (error) {
-            alert(LOCATION_TRACKING + " task error: " + error.message)
+            alert("Ha habido un error al obtener su geolocalizacion: " + error.message)
             return
         }
         if (data) {
@@ -60,8 +61,6 @@ export default function MapPage({navigation}) {
             })
 
 
-
-
             void saveDataLocally({lat, long, date})
             let distance = calculateDistance(parkCenter.latitude, parkCenter.longitude, lat, long)
 
@@ -78,20 +77,29 @@ export default function MapPage({navigation}) {
 
     useEffect(() => {
         const config = async () => {
+            void handleUploadRealTimeDatabase()
             let res_foreground = await Permissions.askAsync(Permissions.LOCATION_FOREGROUND)
             let res_background = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND)
 
-            alert("¿Se han dado ambos permisos de localizacion? " + res_foreground.granted + ":" + res_background.granted)
-
-            if (res_foreground.granted && res_background.granted) {
+            if (res_foreground.granted) {
                 let zone = zones[currentZoneIndex]
                 startLocationTracking(zone.accuracy, zone.timeInterval, zone.distanceInterval).catch(() => {
-                    alert("Error al activar la geolocalización")
+                    alert("Error al activar la geolocalización. Es necesario que active la ubicación para que el mapa funcione correctamente")
                 })
             } else {
                 alert("Es necesario que active la ubicación para que el mapa funcione correctamente")
+                await Permissions.askAsync(Permissions.LOCATION_FOREGROUND)
+                await Permissions.askAsync(Permissions.LOCATION_BACKGROUND)
+            }
+            if (!res_background.granted) {
+                await Permissions.askAsync(Permissions.LOCATION_BACKGROUND)
             }
         }
+        void config()
+
+    }, [])
+
+    useEffect(() => {
         let scannedPlantsData = []
 
         const fetchUserPlants = async () => {
@@ -99,10 +107,10 @@ export default function MapPage({navigation}) {
             scannedPlantsData = await userDoc.data()["scannedPlants"];
             setUserPlants(scannedPlantsData);
         }
-        void config()
         void fetchUserPlants()
 
-    }, [])
+    }, [scannedPlants])
+
 
     if (userPlants.length === 0 && scannedPlants > 0) {
         return (

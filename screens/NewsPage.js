@@ -31,8 +31,12 @@ export default function NewsPage() {
                 <Text style={styles.titleText}>¡Lee y</Text>
                 <Text style={styles.titleText}>descubre!</Text>
             </View>
+
             {loading ? (
+                <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
+
+                </View>
             ) : (
                 <ScrollView alwaysBounceVertical={false}>
                     {newsData.map((news, index) => (
@@ -49,7 +53,6 @@ export default function NewsPage() {
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: "center",
         flex: 1,
         backgroundColor: "#FFFFFF",
     },
@@ -65,12 +68,11 @@ const styles = StyleSheet.create({
         color: "#A8A8A8"
 
     },
-    newsContainer: {
+    loadingContainer: {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        marginTop: hp(24)
     }
 
 })

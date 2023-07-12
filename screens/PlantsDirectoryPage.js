@@ -13,7 +13,7 @@ export default function PlantsDirectoryPage({navigation}) {
     const [plants, setPlants] = useState([])
     const [userPlants, setUserPlants] = useState([])
     const [plantReminderHeight, setPlantReminderHeight] = useState(hp(40))
-    const [prevUserPlantsValue, setPrevUserPlantsValue] = useState(0)
+    const [prevUserPlantsValue, setPrevUserPlantsValue] = useState(-1)
     const [loading, setLoading] = useState(false);
 
 
@@ -25,7 +25,7 @@ export default function PlantsDirectoryPage({navigation}) {
 
             }
             const userDoc = await getDoc(doc(db, "users", user.uid));
-            scannedPlantsData = await userDoc.data()["scannedPlants"];
+            scannedPlantsData = userDoc.data()["scannedPlants"];
             setUserPlants(scannedPlantsData);
             if (scannedPlantsData.length > 0) {
                 setPlantReminderHeight(hp(20));

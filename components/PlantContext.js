@@ -25,7 +25,7 @@ export const PlantProvider = ({children}) => {
         });
 
         return () => unsubscribe(); // Se cancela el listener al desmontar el componente
-    }, []);
+    }, [scannedPlants]);
 
     useEffect(() => {
         const plantsCollection = collection(db, "plants")

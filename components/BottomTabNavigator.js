@@ -63,6 +63,7 @@ function MapStackNavigator() {
         })}>
             <MapStack.Screen name="MapPage" component={MapPage}/>
             <MapStack.Screen name="QrScanFromMap" component={QrScanPage}/>
+            <MapStack.Screen name="PlantDetailFromMap" component={PlantPage}/>
 
         </MapStack.Navigator>
     )

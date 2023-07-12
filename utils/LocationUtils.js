@@ -79,7 +79,6 @@ export const handleZoneDeactivation = async () => {
 export const handlePrevZoneActivation = async () => {
     await handleZoneDeactivation()
     currentZoneIndex -= 1
-    alert ("Se activa zona previa: " + currentZoneIndex)
     let zone = zones[currentZoneIndex]
     void startLocationTracking(zone.accuracy, zone.timeInterval, zone.distanceInterval)
 }
@@ -88,7 +87,6 @@ export const handleNextZoneActivation = async () => {
     await handleZoneDeactivation()
     currentZoneIndex += 1
     if (currentZoneIndex < 5) {
-        alert ("Se activa zona siguiente: " + currentZoneIndex)
         let zone = zones[currentZoneIndex]
         void startLocationTracking(zone.accuracy, zone.timeInterval, zone.distanceInterval)
     }
@@ -153,9 +151,7 @@ export const handleUploadRealTimeDatabase = async () => {
             const newGPSKey = push(child(ref(realTimeDatabase), '/user-GPS-data/' + auth.currentUser.uid)).key
             updates['/user-GPS-data/' + auth.currentUser.uid + '/' + newGPSKey] = data
             update(ref(realTimeDatabase), updates).then(() => {
-                alert("Datos sincronizacos con Firebase")
                 AsyncStorage.removeItem('geolocationData')
-                alert("Datos locales eliminados")
             })
         }
     } catch (error) {
