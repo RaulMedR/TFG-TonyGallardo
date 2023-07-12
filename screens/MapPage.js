@@ -30,59 +30,54 @@ export default function MapPage({navigation}) {
     const [currentPosition, setCurrentPosition] = useState(parkCenter);
     const {user, scannedPlants} = useContext(PlantContext)
     const [userPlants, setUserPlants] = useState([])
+    TaskManager.defineTask(LOCATION_TRACKING, async ({data, error}) => {
+        if (error) {
+            alert(LOCATION_TRACKING + " task error: " + error.message)
+            return
+        }
+        if (data) {
+            const {locations} = data
+            let lat = locations[0].coords.latitude
+            let long = locations[0].coords.longitude
+            let date = new Date(Date.now()).toLocaleString()
+            if (asyncStorageTimer == null) startAsyncStorageTimer()
+            const saveDataLocally = async (data) => {
+                try {
+                    const existingDataJson = await AsyncStorage.getItem('geolocationData')
+                    let existingData = existingDataJson ? JSON.parse(existingDataJson) : []
+                    existingData = existingData.concat(data)
+                    const jsonData = JSON.stringify(existingData)
+                    await AsyncStorage.setItem('geolocationData', jsonData)
+
+                } catch (error) {
+                    alert("Error al guardar los datos localmente: " + error.message)
+                }
+            }
+
+            setCurrentPosition({
+                latitude: lat,
+                longitude: long
+            })
+
+
+
+
+            void saveDataLocally({lat, long, date})
+            let distance = calculateDistance(parkCenter.latitude, parkCenter.longitude, lat, long)
+
+            if (distance > zones[currentZoneIndex].radius) {
+                void handleNextZoneActivation()
+            } else if (currentZoneIndex > 0) {
+                if (distance <= zones[currentZoneIndex - 1].radius) {
+                    void handlePrevZoneActivation()
+                }
+            }
+
+        }
+    })
 
     useEffect(() => {
         const config = async () => {
-            TaskManager.defineTask(LOCATION_TRACKING, async ({data, error}) => {
-                if (error) {
-                    alert(LOCATION_TRACKING + " task error: " + error.message)
-                    return
-                }
-                if (data) {
-                    const {locations} = data
-                    let lat = locations[0].coords.latitude
-                    let long = locations[0].coords.longitude
-                    let date = new Date(Date.now()).toLocaleString()
-                    if (asyncStorageTimer == null) startAsyncStorageTimer()
-                    const saveDataLocally = async (data) => {
-                        try {
-                            const existingDataJson = await AsyncStorage.getItem('geolocationData')
-                            let existingData = existingDataJson ? JSON.parse(existingDataJson) : []
-                            existingData = existingData.concat(data)
-                            const jsonData = JSON.stringify(existingData)
-                            await AsyncStorage.setItem('geolocationData', jsonData)
-
-                        } catch (error) {
-                            alert("Error al guardar los datos localmente: " + error.message)
-                        }
-                    }
-
-                    setCurrentPosition({
-                        latitude: lat,
-                        longitude: long
-                    })
-
-
-
-
-                    void saveDataLocally({lat, long, date})
-                    let distance = calculateDistance(parkCenter.latitude, parkCenter.longitude, lat, long)
-
-                    if (distance > zones[currentZoneIndex].radius) {
-                        void handleNextZoneActivation()
-                    } else if (currentZoneIndex > 0) {
-                        if (distance <= zones[currentZoneIndex - 1].radius) {
-                            void handlePrevZoneActivation()
-                        }
-                    }
-
-                }
-            })
-
-            if(!TaskManager.isTaskDefined(LOCATION_TRACKING)){
-                return void config()
-            }
-
             let res_foreground = await Permissions.askAsync(Permissions.LOCATION_FOREGROUND)
             let res_background = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND)
 

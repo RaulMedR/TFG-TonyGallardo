@@ -49,6 +49,7 @@ export default function NewsPage() {
 
 const styles = StyleSheet.create({
     container: {
+        justifyContent: "center",
         flex: 1,
         backgroundColor: "#FFFFFF",
     },

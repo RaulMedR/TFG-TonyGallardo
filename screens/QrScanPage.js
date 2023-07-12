@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {BarCodeScanner} from "expo-barcode-scanner";
 import {Ionicons} from '@expo/vector-icons'
@@ -14,8 +14,10 @@ export default function QrScanPage({route, navigation}) {
     const [scannedData, setScannedData] = useState(null)
     const {user, scannedPlants, setScannedPlants} = useContext(PlantContext)
     const [scanningEnabled, setScanningEnabled] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true)
         return navigation.addListener('focus', () => {
             (async () => {
                 if (!scanningEnabled) {
@@ -24,6 +26,8 @@ export default function QrScanPage({route, navigation}) {
                 const {status} = await BarCodeScanner.requestPermissionsAsync();
                 if (status !== 'granted') {
                     alert('Se requiere permiso para acceder a la cámara.');
+                } else {
+                    setLoading(false)
                 }
             })();
         })
@@ -84,11 +88,14 @@ export default function QrScanPage({route, navigation}) {
             </View>
             <View style={styles.cameraContainer}>
                 <View style={styles.cameraWrapper}>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#00DAE8" style={{position: "absolute", alignSelf: "center"}}/>
+                    ) : (
                     <BarCodeScanner style={StyleSheet.absoluteFillObject}
                                     ratio={scannerAspectRatio}
                                     onBarCodeScanned={handleBarCodeScanned}
                                     barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-                    />
+                    />)}
                 </View>
                 <View style={styles.overlay}>
                     <View style={styles.scanSquare}/>
