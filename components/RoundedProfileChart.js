@@ -1,7 +1,7 @@
 import {StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {useContext} from "react";
-import PlantContext from "./PlantContext";
+import PlantContext from "../context/PlantContext";
 
 export default function RoundedProfileChart() {
     const {scannedPlants, totalPlants} = useContext(PlantContext)

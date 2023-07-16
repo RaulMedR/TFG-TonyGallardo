@@ -4,7 +4,7 @@ import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-nativ
 import * as ImagePicker from 'expo-image-picker';
 import CustomButton from "../components/CustomButton";
 import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
-import PlantContext from "../components/PlantContext";
+import PlantContext from "../context/PlantContext";
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage'
 import {auth, storage} from "../utils/firebaseConfig";
 import {updateProfile} from 'firebase/auth'

@@ -5,7 +5,7 @@ import {Ionicons} from '@expo/vector-icons'
 import {useContext, useEffect, useState} from "react";
 import {arrayUnion, doc, getDoc, updateDoc} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
-import PlantContext from "../components/PlantContext";
+import PlantContext from "../context/PlantContext";
 import Toast from "react-native-root-toast";
 
 const scannerAspectRatio = hp(100) / wp(100);

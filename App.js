@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import LoginPage from "./screens/LoginPage";
 import RegisterPage from "./screens/RegisterPage";
 import {RootSiblingParent} from 'react-native-root-siblings'
-import BottomTabNavigator from "./components/BottomTabNavigator";
+import TabNavigator from "./routes/TabNavigator";
 import PlantPage from "./screens/PlantPage";
 
 const Stack = createNativeStackNavigator();
@@ -28,7 +28,7 @@ export default function App() {
                         component={RegisterPage}
                     />
                     <Stack.Screen
-                        name={"Main"} component={BottomTabNavigator}/>
+                        name={"Main"} component={TabNavigator}/>
                     <Stack.Screen
                         name={"Plant"} component={PlantPage}/>
                 </Stack.Navigator>

@@ -4,7 +4,7 @@ import {doc, getDoc} from "firebase/firestore";
 import {db} from "../utils/firebaseConfig";
 import {useContext, useEffect, useState} from "react";
 import CustomCard from "../components/CustomCard";
-import PlantContext from "../components/PlantContext";
+import PlantContext from "../context/PlantContext";
 import {AutoSizeText, ResizeTextMode} from "react-native-auto-size-text";
 
 

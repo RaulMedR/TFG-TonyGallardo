@@ -1,7 +1,7 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import MainPage from "../screens/MainPage";
 import ProfilePage from "../screens/ProfilePage";
-import {PlantProvider} from "./PlantContext";
+import {PlantProvider} from "../context/PlantContext";
 import PlantsDirectoryPage from "../screens/PlantsDirectoryPage";
 import PlantPage from "../screens/PlantPage";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
@@ -83,7 +83,7 @@ const CustomTabBarButton = ({children, onPress}) => (
 
 )
 
-export default function BottomTabNavigator() {
+export default function TabNavigator() {
     return (
         <PlantProvider>
 

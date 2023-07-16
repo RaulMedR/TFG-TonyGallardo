@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage/";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import {doc, getDoc} from "firebase/firestore";
 import plantLocationData from '../assets/plants_location.json'
-import PlantContext from "../components/PlantContext";
+import PlantContext from "../context/PlantContext";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {
     asyncStorageTimer,

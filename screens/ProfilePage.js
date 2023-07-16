@@ -5,7 +5,7 @@ import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-nativ
 import CustomButton from "../components/CustomButton";
 import {addDoc, collection} from "firebase/firestore"
 import {db} from "../utils/firebaseConfig";
-import PlantContext from "../components/PlantContext";
+import PlantContext from "../context/PlantContext";
 
 export default function ProfilePage({navigation}) {
     const {user} = useContext(PlantContext)

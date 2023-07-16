@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {ActivityIndicator, Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
-import PlantContext from "./PlantContext";
+import PlantContext from "../context/PlantContext";
 import {auth, db} from "../utils/firebaseConfig";
 import {doc, getDoc} from "firebase/firestore";
 import CustomCard from "./CustomCard";
