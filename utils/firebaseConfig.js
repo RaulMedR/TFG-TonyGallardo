@@ -14,14 +14,6 @@ import {getStorage} from 'firebase/storage'
 // Initialize Firebase
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAsVnodbOxHIosAmLNtuZECEx-4rM_nV3Q",
-    authDomain: "tfg-tonygallardo.firebaseapp.com",
-    projectId: "tfg-tonygallardo",
-    storageBucket: "tfg-tonygallardo.appspot.com",
-    messagingSenderId: "996558129917",
-    appId: "1:996558129917:web:9f35e52bf9c9992bcc4c94",
-    measurementId: "G-6SDP4NPXP0",
-    databaseURL: "https://tfg-tonygallardo-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 
 const app = initializeApp(firebaseConfig);
